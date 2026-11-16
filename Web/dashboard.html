@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resumen | Eventia</title>
+  <meta name="theme-color" content="#15181b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8601C'/%3E%3Cpath d='M10 9h12v3H13.5v2.5H21v3h-7.5V20H22v3H10z' fill='%230e1012'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="brand" aria-label="Eventia, ir al resumen">
+        <span class="brand-mark" aria-hidden="true">E</span>Eventia
+      </a>
+      <nav class="nav" aria-label="Principal">
+        <a href="dashboard.html" aria-current="page">Resumen</a>
+        <a href="eventos.html">Eventos</a>
+        <a href="charlas.html">Charlas</a>
+        <a href="ponentes.html">Ponentes</a>
+        <a href="asistentes.html">Asistentes</a>
+        <a href="inscripciones.html">Inscripciones</a>
+        <a href="certificados.html">Certificados</a>
+        <a href="usuarios.html">Usuarios</a>
+      </nav>
+      <a class="logout" href="login.html">Cerrar sesión</a>
+    </aside>
+    <main class="content">
+      <div class="page-head">
+        <div>
+          <h1>Resumen</h1>
+          <p>Estado general de tus eventos.</p>
+        </div>
+        <a href="eventos.html" class="btn btn-primary btn-sm">Ver eventos</a>
+      </div>
+
+      <section class="stats" aria-label="Cifras principales">
+        <a class="stat stat--main" href="inscripciones.html"><span>Inscripciones</span><b>12</b></a>
+        <a class="stat" href="eventos.html"><span>Eventos</span><b>3</b></a>
+        <a class="stat" href="charlas.html"><span>Charlas</span><b>7</b></a>
+        <a class="stat" href="asistentes.html"><span>Asistentes</span><b>8</b></a>
+        <div class="stat"><span>Asistencia (eventos pasados)</span><b>89 %</b></div>
+        <a class="stat" href="certificados.html"><span>Certificados</span><b>7</b></a>
+      </section>
+
+      <div class="panels">
+        <section class="panel" aria-labelledby="chart-title">
+          <div class="panel-head"><h2 id="chart-title">Inscritos por charla</h2><a class="link" href="charlas.html">Ver charlas</a></div>
+          <p class="note">Cada barra es una charla (#Id). La más concurrida va en naranja.</p>
+          <div class="bars" role="img" aria-label="Inscritos por charla: charla 1: 3, charla 2: 2, charla 3: 1, charla 4: 2, charla 5: 1, charla 6: 2, charla 7: 1."><div class="bar-col is-top"><span>3</span><i style="--h:85%"></i>#1</div><div class="bar-col"><span>2</span><i style="--h:57%"></i>#2</div><div class="bar-col"><span>1</span><i style="--h:28%"></i>#3</div><div class="bar-col"><span>2</span><i style="--h:57%"></i>#4</div><div class="bar-col"><span>1</span><i style="--h:28%"></i>#5</div><div class="bar-col"><span>2</span><i style="--h:57%"></i>#6</div><div class="bar-col"><span>1</span><i style="--h:28%"></i>#7</div></div>
+        </section>
+
+        <section class="panel" aria-labelledby="events-title">
+          <h2 id="events-title">Eventos</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th scope="col">Evento</th><th scope="col">Inicio</th><th scope="col" class="num">Charlas</th><th scope="col" class="num">Inscritos</th><th scope="col">Estado</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><a href="eventos.html#evento-1">Cumbre Digital 2026</a></td><td>18 sep 2026</td><td class="num">3</td><td class="num">6</td><td><span class="tag tag--draft">Finalizado</span></td></tr>
+                <tr><td><a href="eventos.html#evento-2">Foro de Datos</a></td><td>24 oct 2026</td><td class="num">2</td><td class="num">3</td><td><span class="tag tag--draft">Finalizado</span></td></tr>
+                <tr><td><a href="eventos.html#evento-3">Jornada de Producto</a></td><td>3 dic 2026</td><td class="num">2</td><td class="num">3</td><td><span class="tag tag--open">Próximo</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <div class="sidebar-overlay" id="overlay"></div>
+
+<script src="js/comun.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    // Validar sesión y mostrar la identidad devuelta por POST /login.
+    const sesion = requerirSesion();
+
+    if (sesion) {
+        const nombre = sesion.clienteNombre || sesion.nombreUsuario || "Usuario";
+        document.getElementById("nombreUsuarioSesion").textContent = nombre;
+        document.getElementById("detalleUsuarioSesion").textContent =
+            "@" + (sesion.nombreUsuario || "usuario");
+        document.getElementById("avatarUsuario").textContent = inicialesUsuario(sesion);
+
+        const fecha = new Intl.DateTimeFormat("es-BO", {
+            weekday: "long", day: "numeric", month: "long", year: "numeric"
+        }).format(new Date());
+        document.getElementById("fechaActual").textContent =
+            fecha.charAt(0).toUpperCase() + fecha.slice(1);
+    }
+
+    document.getElementById("btnCerrarSesion").addEventListener("click", (e) => {
+        e.preventDefault();
+        cerrarSesion();
+    });
+
+    // Menú móvil
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+    const btnMenu = document.getElementById("btnMenu");
+
+    if (btnMenu && sidebar && overlay) {
+        btnMenu.addEventListener("click", () => {
+            sidebar.classList.add("open");
+            overlay.classList.add("show");
+        });
+        overlay.addEventListener("click", () => {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("show");
+        });
+    }
+
+    // Resumen de usuarios/clientes: únicos módulos conectados actualmente.
+    async function cargarResumen() {
+        if (!sesion) return;
+        try {
+            const [usuarios, clientes] = await Promise.all([
+                api("/usuarios", "GET", null, API_USUARIOS),
+                api("/clientes", "GET", null, API_CLIENTES)
+            ]);
+
+            // Mostrar las cifras en un aviso discreto sin alterar la estructura del diseño.
+            const aviso = document.getElementById("alertaResumen");
+            if (aviso) {
+                aviso.textContent =
+                    "Registros actuales: " +
+                    (Array.isArray(usuarios) ? usuarios.length : 0) + " usuarios · " +
+                    (Array.isArray(clientes) ? clientes.length : 0) + " clientes.";
+            }
+        } catch (error) {
+            const aviso = document.getElementById("alertaResumen");
+            if (aviso) aviso.textContent = "No se pudo cargar el resumen: " + error.message;
+        }
+    }
+
+    // Gráfico de referencia visual; ventas aún no tiene endpoint en la API.
+    const canvas = document.getElementById("graficoVentas");
+    if (window.Chart && canvas) {
+        const estilos = getComputedStyle(document.documentElement);
+        const verde = estilos.getPropertyValue("--color-primario").trim();
+        const menta = estilos.getPropertyValue("--color-secundario").trim();
+        const texto = estilos.getPropertyValue("--color-texto-suave").trim();
+        const borde = estilos.getPropertyValue("--color-borde").trim();
+
+        new Chart(canvas, {
+            type: "line",
+            data: {
+                labels: ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"],
+                datasets: [{
+                    label: "Datos de demostración",
+                    data: [3850, 4200, 3920, 4610, 5130, 5840, 4820],
+                    borderColor: verde,
+                    backgroundColor: "rgba(46, 125, 91, 0.12)",
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: verde
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: { usePointStyle: true, padding: 16, color: texto, font: { family: "Roboto" } }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: texto } },
+                    y: { grid: { color: borde }, ticks: { color: texto } }
+                }
+            }
+        });
+    }
+
+    cargarResumen();
+</script>
+</body>
+</html>

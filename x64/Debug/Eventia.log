@@ -1,0 +1,7 @@
+﻿  UsuarioDatabase.cpp
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\Conexion.h(3,9): warning C4005: '_CRT_SECURE_NO_WARNINGS': macro redefinition
+  (compiling source file 'UsuarioDatabase.cpp')
+      C:\Users\JOAQUIN\source\repos\Eventia\Eventia\Conexion.h(3,9):
+      '_CRT_SECURE_NO_WARNINGS' previously declared on the command line
+  
+  Eventia.vcxproj -> C:\Users\JOAQUIN\source\repos\Eventia\x64\Debug\Eventia.exe

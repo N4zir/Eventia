@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Asistentes | Eventia</title>
+  <meta name="theme-color" content="#15181b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8601C'/%3E%3Cpath d='M10 9h12v3H13.5v2.5H21v3h-7.5V20H22v3H10z' fill='%230e1012'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="brand" aria-label="Eventia, ir al resumen">
+        <span class="brand-mark" aria-hidden="true">E</span>Eventia
+      </a>
+      <nav class="nav" aria-label="Principal">
+        <a href="dashboard.html">Resumen</a>
+        <a href="eventos.html">Eventos</a>
+        <a href="charlas.html">Charlas</a>
+        <a href="ponentes.html">Ponentes</a>
+        <a href="asistentes.html" aria-current="page">Asistentes</a>
+        <a href="inscripciones.html">Inscripciones</a>
+        <a href="certificados.html">Certificados</a>
+        <a href="usuarios.html">Usuarios</a>
+      </nav>
+      <a class="logout" href="login.html">Cerrar sesión</a>
+    </aside>
+    <main class="content">
+      <div class="page-head">
+        <div>
+          <h1>Asistentes</h1>
+          <p>Personas inscritas. La cuenta de acceso es opcional.</p>
+        </div>
+        <button type="button" class="btn btn-primary btn-sm" id="open-new">Nuevo asistente</button>
+      </div>
+
+      <section class="panel" aria-label="Listado de asistentes">
+        <div class="toolbar">
+          <input class="input" id="search" type="search" placeholder="Buscar en asistentes" aria-label="Buscar en asistentes">
+          <span class="note">Mostrando <span id="count"></span></span>
+        </div>
+        <p class="status" id="status" role="status"></p>
+        <div class="table-wrap">
+          <table class="wide" data-table data-unique="Correo">
+            <thead><tr><th scope="col" class="id" data-field="Id">Id</th><th scope="col" class="" data-field="Nombre">Nombre</th><th scope="col" class="" data-field="Correo">Correo</th><th scope="col" class="" data-field="usuario">Usuario</th><th scope="col" class="" data-field="cuenta">Cuenta</th><th scope="col" class="num" data-field="inscripciones" data-num>Inscripciones</th></tr></thead>
+            <tbody>
+            <tr id="asistente-1" data-id="1"><td class="id">1</td><td>Laura Martínez</td><td>laura.martinez@correo.com</td><td><a href="usuarios.html#usuario-3">lmartinez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Laura%20Mart%C3%ADnez">2</a></td></tr>
+            <tr id="asistente-2" data-id="2"><td class="id">2</td><td>Diego Fernández</td><td>diego.fernandez@correo.com</td><td><a href="usuarios.html#usuario-4">dfernandez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Diego%20Fern%C3%A1ndez">1</a></td></tr>
+            <tr id="asistente-3" data-id="3"><td class="id">3</td><td>Valeria Choque</td><td>valeria.choque@correo.com</td><td><a href="usuarios.html#usuario-5">vchoque</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Valeria%20Choque">2</a></td></tr>
+            <tr id="asistente-4" data-id="4"><td class="id">4</td><td>Sebastián Rojas</td><td>sebastian.rojas@correo.com</td><td><a href="usuarios.html#usuario-6">srojas</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Sebasti%C3%A1n%20Rojas">1</a></td></tr>
+            <tr id="asistente-5" data-id="5"><td class="id">5</td><td>Mariana Flores</td><td>mariana.flores@correo.com</td><td><a href="usuarios.html#usuario-7">mflores</a></td><td><span class="tag tag--draft">Inactiva</span></td><td class="num"><a href="inscripciones.html?q=Mariana%20Flores">1</a></td></tr>
+            <tr id="asistente-6" data-id="6"><td class="id">6</td><td>Jorge Álvarez</td><td>jorge.alvarez@correo.com</td><td><a href="usuarios.html#usuario-8">jalvarez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Jorge%20%C3%81lvarez">2</a></td></tr>
+            <tr id="asistente-7" data-id="7"><td class="id">7</td><td>Paola Mamani</td><td>paola.mamani@correo.com</td><td>—</td><td><span class="tag tag--draft">Sin cuenta</span></td><td class="num"><a href="inscripciones.html?q=Paola%20Mamani">1</a></td></tr>
+            <tr id="asistente-8" data-id="8"><td class="id">8</td><td>Nicolás Gutiérrez</td><td>nicolas.gutierrez@correo.com</td><td><a href="usuarios.html#usuario-9">ngutierrez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Nicol%C3%A1s%20Guti%C3%A9rrez">2</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="empty" id="empty" hidden>No hay resultados. Prueba con otra búsqueda.</p>
+      </section>
+
+      <dialog id="new-dialog" aria-labelledby="dlg-title">
+        <h2 id="dlg-title">Nuevo asistente</h2>
+        <form class="form" method="dialog">
+          <div class="field"><label for="f-Nombre">Nombre completo</label><input class="input" id="f-Nombre" name="Nombre" type="text" required></div>
+          <div class="field"><label for="f-Correo">Correo electrónico</label><input class="input" id="f-Correo" name="Correo" type="email" required></div>
+          <div class="dialog-actions">
+            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Cancelar</button>
+            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+  </div>
+  <script src="assets/js/tables.js"></script>
+</body>
+</html>
