@@ -140,19 +140,44 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ApiAsistentes.cpp" />
+    <ClCompile Include="ApiCertificados.cpp" />
+    <ClCompile Include="ApiCharlas.cpp" />
     <ClCompile Include="ApiEvento.cpp" />
+    <ClCompile Include="ApiEventosCrud.cpp" />
+    <ClCompile Include="ApiInscripciones.cpp" />
+    <ClCompile Include="ApiPonentes.cpp" />
     <ClCompile Include="ApiUsuarios.cpp" />
     <ClCompile Include="AsistenteDatabase.cpp" />
+    <ClCompile Include="CertificadoDatabase.cpp" />
+    <ClCompile Include="CharlaDatabase.cpp" />
+    <ClCompile Include="EventoDatabase.cpp" />
+    <ClCompile Include="InscripcionDatabase.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PonenteDatabase.cpp" />
     <ClCompile Include="UsuarioDatabase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ApiAsistentes.h" />
+    <ClInclude Include="ApiCertificados.h" />
+    <ClInclude Include="ApiCharlas.h" />
     <ClInclude Include="ApiEvento.h" />
+    <ClInclude Include="ApiEventosCrud.h" />
+    <ClInclude Include="ApiInscripciones.h" />
+    <ClInclude Include="ApiPonentes.h" />
     <ClInclude Include="ApiUsuarios.h" />
     <ClInclude Include="Asistente.h" />
     <ClInclude Include="AsistenteDatabase.h" />
+    <ClInclude Include="Certificado.h" />
+    <ClInclude Include="CertificadoDatabase.h" />
+    <ClInclude Include="Charla.h" />
+    <ClInclude Include="CharlaDatabase.h" />
     <ClInclude Include="Conexion.h" />
+    <ClInclude Include="Evento.h" />
+    <ClInclude Include="EventoDatabase.h" />
+    <ClInclude Include="Inscripcion.h" />
+    <ClInclude Include="InscripcionDatabase.h" />
+    <ClInclude Include="Ponente.h" />
+    <ClInclude Include="PonenteDatabase.h" />
     <ClInclude Include="SqlUtf8.h" />
     <ClInclude Include="Usuario.h" />
     <ClInclude Include="UsuarioDatabase.h" />

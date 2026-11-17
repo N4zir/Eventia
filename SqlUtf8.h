@@ -58,6 +58,15 @@ inline void bindTexto(SQLHSTMT stmt, SQLUSMALLINT pos, const std::wstring& w,
         tamanio, 0, (SQLPOINTER)w.c_str(), bytes, &indicador);
 }
 
+// Fecha ISO (YYYY-MM-DD) -> columna SQL date (SQL Server la convierte sola).
+inline void bindFecha(SQLHSTMT stmt, SQLUSMALLINT pos, const std::wstring& w,
+    SQLLEN& indicador) {
+    SQLLEN bytes = static_cast<SQLLEN>(w.size() * sizeof(SQLWCHAR));
+    indicador = bytes;
+    SQLBindParameter(stmt, pos, SQL_PARAM_INPUT, SQL_C_WCHAR, SQL_WVARCHAR,
+        10, 0, (SQLPOINTER)w.c_str(), bytes, &indicador);
+}
+
 // Texto opcional: si está vacío se envía NULL
 inline void bindTextoOpcional(SQLHSTMT stmt, SQLUSMALLINT pos, const std::wstring& w,
     SQLLEN& indicador, SQLULEN tamanio) {

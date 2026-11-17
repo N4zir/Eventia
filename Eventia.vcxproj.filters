@@ -15,51 +15,126 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UsuarioDatabase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AsistenteDatabase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ApiAsistentes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ApiUsuarios.cpp">
+    <ClCompile Include="ApiCertificados.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp">
+    <ClCompile Include="ApiCharlas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ApiEvento.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ApiEventosCrud.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApiInscripciones.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApiPonentes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApiUsuarios.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AsistenteDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CertificadoDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CharlaDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EventoDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InscripcionDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PonenteDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UsuarioDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Usuario.h">
+    <ClInclude Include="ApiAsistentes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UsuarioDatabase.h">
+    <ClInclude Include="ApiCertificados.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ApiUsuarios.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Conexion.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SqlUtf8.h">
+    <ClInclude Include="ApiCharlas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ApiEvento.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ApiAsistentes.h">
+    <ClInclude Include="ApiEventosCrud.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApiInscripciones.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApiPonentes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApiUsuarios.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Asistente.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AsistenteDatabase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Asistente.h">
+    <ClInclude Include="Certificado.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CertificadoDatabase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Charla.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CharlaDatabase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Conexion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Evento.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EventoDatabase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Inscripcion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InscripcionDatabase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ponente.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PonenteDatabase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SqlUtf8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Usuario.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UsuarioDatabase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

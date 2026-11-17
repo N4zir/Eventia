@@ -9,12 +9,12 @@ namespace {
     string validarAsistente(const Asistente& a) {
         if (a.nombre.empty())
             return "El nombre es obligatorio.";
-        if (a.nombre.size() > 100)
-            return "El nombre no puede superar 100 caracteres.";
+        if (a.nombre.size() > 200)
+            return "El nombre no puede superar 200 caracteres.";
         if (a.correo.empty())
             return "El correo es obligatorio.";
-        if (a.correo.size() > 100)
-            return "El correo no puede superar 100 caracteres.";
+        if (a.correo.size() > 200)
+            return "El correo no puede superar 200 caracteres.";
         if (a.correo.find('@') == string::npos)
             return "El correo no es valido.";
         return "";

@@ -6,7 +6,9 @@ ApiEvento::ApiEvento(const string& connStr)
 /* : usuarios_(connStr), clientes_(connStr), vehiculos_(connStr),
  mecanicos_(connStr), servicios_(connStr), ordenes_(connStr),
  ordenServicios_(connStr), facturas_(connStr) {*/
-    : usuarios_(connStr), asistentes_(connStr) {
+    : usuarios_(connStr), asistentes_(connStr), eventos_(connStr),
+      ponentes_(connStr), charlas_(connStr), inscripciones_(connStr),
+      certificados_(connStr) {
     configurarCors();
     registrarRutas();
 }
@@ -26,6 +28,11 @@ void ApiEvento::configurarCors() {
 void ApiEvento::registrarRutas() {
     usuarios_.registrarRutas(app_);
     asistentes_.registrarRutas(app_);
+    eventos_.registrarRutas(app_);
+    ponentes_.registrarRutas(app_);
+    charlas_.registrarRutas(app_);
+    inscripciones_.registrarRutas(app_);
+    certificados_.registrarRutas(app_);
     //clientes_.registrarRutas(app_);
     /* vehiculos_.registrarRutas(app_);
      mecanicos_.registrarRutas(app_);

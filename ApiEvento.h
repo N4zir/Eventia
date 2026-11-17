@@ -4,6 +4,11 @@
 #include "crow/middlewares/cors.h"
 #include "ApiUsuarios.h"
 #include "ApiAsistentes.h"
+#include "ApiEventosCrud.h"
+#include "ApiPonentes.h"
+#include "ApiCharlas.h"
+#include "ApiInscripciones.h"
+#include "ApiCertificados.h"
 //#include "ApiClientes.h"
 //#include "ApiVehiculos.h"
 //#include "ApiMecanicos.h"
@@ -28,6 +33,11 @@ private:
     crow::App<crow::CORSHandler> app_;
     ApiUsuarios usuarios_;
     ApiAsistentes asistentes_;
+    ApiEventosCrud eventos_;
+    ApiPonentes ponentes_;
+    ApiCharlas charlas_;
+    ApiInscripciones inscripciones_;
+    ApiCertificados certificados_;
     //ApiClientes clientes_;
     /* ApiVehiculos vehiculos_;
      ApiMecanicos mecanicos_;

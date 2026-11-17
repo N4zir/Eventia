@@ -106,8 +106,8 @@ int AsistenteDatabase::crearAsistente(const Asistente& a) {
     SQLLEN longitudNombre = 0;
     SQLLEN longitudCorreo = 0;
 
-    bindTexto(con.stmt, 1, nombre, longitudNombre, 100);
-    bindTexto(con.stmt, 2, correo, longitudCorreo, 100);
+    bindTexto(con.stmt, 1, nombre, longitudNombre, 200);
+    bindTexto(con.stmt, 2, correo, longitudCorreo, 200);
 
     const string sql =
         "INSERT INTO Asistentes (Nombre, Correo) "
@@ -141,8 +141,8 @@ bool AsistenteDatabase::actualizarAsistente(int id, const Asistente& a) {
     SQLLEN longitudNombre = 0;
     SQLLEN longitudCorreo = 0;
 
-    bindTexto(con.stmt, 1, nombre, longitudNombre, 100);
-    bindTexto(con.stmt, 2, correo, longitudCorreo, 100);
+    bindTexto(con.stmt, 1, nombre, longitudNombre, 200);
+    bindTexto(con.stmt, 2, correo, longitudCorreo, 200);
     bindEntero(con.stmt, 3, idParam);
 
     const string sql =
