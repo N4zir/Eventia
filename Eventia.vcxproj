@@ -139,15 +139,19 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ApiAsistentes.cpp" />
     <ClCompile Include="ApiEvento.cpp" />
     <ClCompile Include="ApiUsuarios.cpp" />
+    <ClCompile Include="AsistenteDatabase.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="UsuarioDatabase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ApiAsistentes.h" />
     <ClInclude Include="ApiEvento.h" />
     <ClInclude Include="ApiUsuarios.h" />
     <ClInclude Include="Asistente.h" />
+    <ClInclude Include="AsistenteDatabase.h" />
     <ClInclude Include="Conexion.h" />
     <ClInclude Include="SqlUtf8.h" />
     <ClInclude Include="Usuario.h" />

@@ -3,6 +3,7 @@
 #include "crow.h"
 #include "crow/middlewares/cors.h"
 #include "ApiUsuarios.h"
+#include "ApiAsistentes.h"
 //#include "ApiClientes.h"
 //#include "ApiVehiculos.h"
 //#include "ApiMecanicos.h"
@@ -26,6 +27,7 @@ private:
     // El orden importa: app_ se crea primero y luego los módulos
     crow::App<crow::CORSHandler> app_;
     ApiUsuarios usuarios_;
+    ApiAsistentes asistentes_;
     //ApiClientes clientes_;
     /* ApiVehiculos vehiculos_;
      ApiMecanicos mecanicos_;

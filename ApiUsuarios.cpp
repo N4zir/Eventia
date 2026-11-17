@@ -13,6 +13,8 @@ namespace {
             return "El nombre de usuario es obligatorio.";
         if (u.nombreUsuario.size() > 50)
             return "El nombre de usuario no puede superar 50 caracteres.";
+        if (rol != "administrador" && rol != "organizador" && rol !="asistente")
+            return "El rol debe ser administrador, organizador, o asistente.";
         if (esNuevo && clave.empty())
             return "La clave es obligatoria.";
         if (!clave.empty() && clave.size() < 6)
@@ -112,7 +114,6 @@ crow::response ApiUsuarios::obtenerUsuario(int id) {
 }
 
 // POST /usuarios
-// {"clienteId":1,"nombreUsuario":"usuario1","clave":"clave123"}
 crow::response ApiUsuarios::crearUsuario(const crow::request& req) {
     try {
         json datos = json::parse(req.body);
@@ -123,7 +124,7 @@ crow::response ApiUsuarios::crearUsuario(const crow::request& req) {
         u.asistenteId = datos.value("asistenteId", 0);
         u.nombreUsuario = datos.value("nombreUsuario", "");
         string clave = datos.value("clave", "");
-        string rol = datos.value("rol", "");
+        string rol = datos.value("rol", "asistente");
 
         string error = validarUsuario(u, clave, true, rol);
         if (!error.empty())
@@ -160,11 +161,11 @@ crow::response ApiUsuarios::actualizarUsuario(const crow::request& req, int id) 
             return respuestaJson(400, { {"error", "Se esperaba un objeto JSON."} });
 
         Usuario u = *actual;
-        u.asistenteId = datos.value("clienteId", actual->asistenteId);
+        u.asistenteId = datos.value("asistenteId", actual->asistenteId);
         u.nombreUsuario = datos.value("nombreUsuario", actual->nombreUsuario);
         u.activo = datos.value("activo", actual->activo);
         string clave = datos.value("clave", "");
-        string rol = datos.value("clave", "");
+        string rol = datos.value("rol", actual->rol);
 
         string error = validarUsuario(u, clave, false, rol);
         if (!error.empty())
@@ -209,8 +210,8 @@ crow::response ApiUsuarios::desactivarUsuario(int id) {
 json ApiUsuarios::usuarioAJson(const Usuario& u) {
     return {
         {"id", u.id},
-        {"clienteId", u.asistenteId},
-        {"clienteNombre", u.asistenteNombre},
+        {"asistenteId", u.asistenteId},
+        {"asistenteNombre", u.asistenteNombre},
         {"nombreUsuario", u.nombreUsuario},
         {"activo", u.activo},
         {"rol", u.rol}

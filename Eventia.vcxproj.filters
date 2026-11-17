@@ -18,6 +18,12 @@
     <ClCompile Include="UsuarioDatabase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AsistenteDatabase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApiAsistentes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ApiUsuarios.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ApiEvento.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApiAsistentes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AsistenteDatabase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Asistente.h">

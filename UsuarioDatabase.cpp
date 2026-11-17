@@ -17,10 +17,10 @@ namespace {
     // 5 = Rol
     // 6 = Activo
     const string SQL_SELECT_USUARIOS =
-        "SELECT u.Id, u.AsistenteId, c.Nombre, "
+        "SELECT u.Id, u.AsistenteId, a.Nombre, "
         "u.NombreUsuario, u.Rol, u.Activo "
         "FROM Usuarios AS u "
-        "INNER JOIN Asistentes AS c ON c.Id = u.AsistenteId";
+        "INNER JOIN Asistentes AS c ON a.Id = u.AsistenteId";
 
     Usuario leerUsuario(SQLHSTMT stmt) {
         SQLINTEGER id = 0;
