@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eventos | Eventia</title>
+  <meta name="theme-color" content="#15181b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8601C'/%3E%3Cpath d='M10 9h12v3H13.5v2.5H21v3h-7.5V20H22v3H10z' fill='%230e1012'/%3E%3C/svg%3E">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <header class="topbar" id="topbar"></header>
+    <main class="content">
+      <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><h1 class="page-title">Gestión de eventos</h1><p class="page-subtitle mb-0">Registro, consulta y administración de eventos.</p></div>
+        <button type="button" class="btn btn-eventia btn-sm px-3" id="btnNuevo"><i class="bi bi-plus-lg me-1"></i> Nuevo evento</button>
+      </div>
+      <div id="alerta" aria-live="polite"></div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-calendar-event"></i></div><div>
+    <p class="kpi-label">Eventos registrados</p><p class="kpi-value" id="totalEventos">—</p><span class="kpi-delta">Registros en el sistema</span></div></div></div>
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-broadcast"></i></div><div>
+    <p class="kpi-label">En curso o próximos</p><p class="kpi-value" id="totalActivos">—</p><span class="kpi-delta">Aún no finalizados</span></div></div></div>
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-calendar-check"></i></div><div>
+    <p class="kpi-label">Finalizados</p><p class="kpi-value" id="totalFinalizados">—</p><span class="kpi-delta">Ya realizados</span></div></div></div>
+</div>
+      <section class="panel-card mb-4" id="panelFormulario">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div><h2 class="panel-title" id="tituloFormulario">Registrar evento</h2><p class="panel-subtitle mb-0">Completa los datos solicitados.</p></div>
+          <span class="kpi-icon"><i class="bi bi-calendar-event"></i></span>
+        </div>
+        <form id="form" class="row g-3">
+          <input type="hidden" id="registroId">
+          <div class="col-12 col-md-4"><label class="form-label" for="eNombre">Nombre del evento</label><input type="text" class="form-control" id="eNombre" maxlength="120" required></div>
+          <div class="col-12 col-md-4"><label class="form-label" for="eInicio">Fecha de inicio</label><input type="date" class="form-control" id="eInicio"  required></div>
+          <div class="col-12 col-md-4"><label class="form-label" for="eFin">Fecha de fin</label><input type="date" class="form-control" id="eFin"  required></div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-eventia px-3" id="btnGuardar"><i class="bi bi-check-lg me-1"></i> Guardar evento</button>
+            <button type="button" class="btn btn-outline-secondary px-3" id="btnLimpiar">Limpiar</button>
+          </div>
+        </form>
+      </section>
+      <section class="panel-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div><h2 class="panel-title">Listado de eventos</h2><p class="panel-subtitle mb-0">Registrados en la base de datos.</p></div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="btnActualizar"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+        </div>
+        <div class="table-responsive"><table class="table table-custom align-middle mb-0">
+          <thead><tr><th>ID</th><th>Nombre</th><th>Inicio</th><th>Fin</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla"><tr><td colspan="6" class="text-center text-muted py-4">Cargando...</td></tr></tbody></table></div>
+      </section>
+    </main>
+  </div>
+</div>
+<div class="sidebar-overlay" id="overlay"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/comun.js"></script>
+<script>
+let eventos = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+    const sesion = montarLayout("eventos", "Buscar evento...");
+    if (!sesion) return;
+    document.getElementById("form").addEventListener("submit", guardarEvento);
+    document.getElementById("btnLimpiar").addEventListener("click", limpiarFormulario);
+    document.getElementById("btnActualizar").addEventListener("click", cargarEventos);
+    document.getElementById("btnNuevo").addEventListener("click", () => { limpiarFormulario(); document.getElementById("eNombre").focus(); });
+    cargarEventos();
+});
+
+async function cargarEventos() {
+    const tbody = document.getElementById("tabla");
+    tbody.innerHTML = filaVacia(6, "Cargando eventos...");
+    try {
+        eventos = await cargarLista("/eventos");
+        const estados = eventos.map(e => estadoEvento(e).orden);
+        document.getElementById("totalEventos").textContent = eventos.length;
+        document.getElementById("totalActivos").textContent = estados.filter(o => o !== 2).length;
+        document.getElementById("totalFinalizados").textContent = estados.filter(o => o === 2).length;
+        tbody.innerHTML = eventos.length ? eventos.map(e => { const st = estadoEvento(e); return `
+            <tr><td>${Number(e.id)}</td><td class="fw-medium">${esc(e.nombre)}</td>
+            <td>${esc(fechaLegible(e.fechaInicio))}</td><td>${esc(fechaLegible(e.fechaFin))}</td>
+            <td><span class="tag ${st.clase}">${st.texto}</span></td>${botonesFila("editarEvento", "eliminarEvento", e.id)}</tr>`; }).join("")
+            : filaVacia(6, "No hay eventos registrados.");
+        aplicarBusqueda();
+    } catch (error) {
+        tbody.innerHTML = filaVacia(6, "No se pudieron cargar los eventos.", "text-danger");
+        mostrarAlerta(error.message, "danger");
+    }
+}
+
+function editarEvento(id) {
+    const e = eventos.find(x => Number(x.id) === Number(id));
+    if (!e) return;
+    document.getElementById("registroId").value = e.id;
+    document.getElementById("eNombre").value = e.nombre || "";
+    document.getElementById("eInicio").value = fechaISO(e.fechaInicio);
+    document.getElementById("eFin").value = fechaISO(e.fechaFin);
+    document.getElementById("tituloFormulario").textContent = "Editar evento";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Actualizar evento';
+    document.getElementById("panelFormulario").scrollIntoView({ behavior: "smooth" });
+}
+
+function limpiarFormulario() {
+    document.getElementById("form").reset();
+    document.getElementById("registroId").value = "";
+    document.getElementById("tituloFormulario").textContent = "Registrar evento";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Guardar evento';
+}
+
+async function guardarEvento(e) {
+    e.preventDefault();
+    const id = document.getElementById("registroId").value;
+    const datos = {
+        nombre: document.getElementById("eNombre").value.trim(),
+        fechaInicio: document.getElementById("eInicio").value,
+        fechaFin: document.getElementById("eFin").value,
+    };
+    if (!datos.nombre || !datos.fechaInicio || !datos.fechaFin) { mostrarAlerta("Nombre y fechas son obligatorios.", "warning"); return; }
+    if (datos.fechaFin < datos.fechaInicio) { mostrarAlerta("La fecha de fin no puede ser anterior a la de inicio.", "warning"); return; }
+    const boton = document.getElementById("btnGuardar");
+    boton.disabled = true;
+    try {
+        if (id) { await api("/eventos/" + encodeURIComponent(id), "PUT", datos, API_EVENTOS); mostrarAlerta("Evento actualizado correctamente.", "success"); }
+        else { await api("/eventos", "POST", datos, API_EVENTOS); mostrarAlerta("Evento registrado correctamente.", "success"); }
+        limpiarFormulario();
+        await cargarEventos();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+    finally { boton.disabled = false; }
+}
+
+async function eliminarEvento(id) {
+    if (!confirm("¿Deseas eliminar este evento? Si tiene charlas relacionadas, SQL Server puede impedir la eliminación.")) return;
+    try {
+        await api("/eventos/" + encodeURIComponent(id), "DELETE", null, API_EVENTOS);
+        mostrarAlerta("Evento eliminado correctamente.", "success");
+        await cargarEventos();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+}
+</script>
+</body>
+</html>

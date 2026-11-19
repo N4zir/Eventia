@@ -10,18 +10,13 @@ class ApiAsistentes {
 public:
     explicit ApiAsistentes(const std::string& connStr);
     void registrarRutas(crow::App<crow::CORSHandler>& app);
-
 private:
     crow::response listarAsistentes();
     crow::response obtenerAsistente(int id);
     crow::response crearAsistente(const crow::request& req);
     crow::response actualizarAsistente(const crow::request& req, int id);
-
+    crow::response eliminarAsistente(int id);
     static nlohmann::json asistenteAJson(const Asistente& a);
-    static crow::response respuestaJson(
-        int status,
-        const nlohmann::json& body
-    );
-
+    static crow::response respuestaJson(int status, const nlohmann::json& body);
     AsistenteDatabase db_;
 };

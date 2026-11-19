@@ -1,6 +1,16 @@
 C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiAsistentes.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiAsistentes.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiCertificados.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiCertificados.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiCharlas.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiCharlas.obj
 C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiEvento.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiEvento.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiEventosCrud.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiEventosCrud.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiInscripciones.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiInscripciones.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiPonentes.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiPonentes.obj
 C:\Users\JOAQUIN\source\repos\Eventia\Eventia\ApiUsuarios.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\ApiUsuarios.obj
 C:\Users\JOAQUIN\source\repos\Eventia\Eventia\AsistenteDatabase.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\AsistenteDatabase.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\CertificadoDatabase.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\CertificadoDatabase.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\CharlaDatabase.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\CharlaDatabase.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\EventoDatabase.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\EventoDatabase.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\InscripcionDatabase.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\InscripcionDatabase.obj
 C:\Users\JOAQUIN\source\repos\Eventia\Eventia\Main.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\Main.obj
+C:\Users\JOAQUIN\source\repos\Eventia\Eventia\PonenteDatabase.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\PonenteDatabase.obj
 C:\Users\JOAQUIN\source\repos\Eventia\Eventia\UsuarioDatabase.cpp;C:\Users\JOAQUIN\source\repos\Eventia\Eventia\x64\Debug\UsuarioDatabase.obj

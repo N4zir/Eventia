@@ -6,75 +6,158 @@
   <title>Certificados | Eventia</title>
   <meta name="theme-color" content="#15181b">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8601C'/%3E%3Cpath d='M10 9h12v3H13.5v2.5H21v3h-7.5V20H22v3H10z' fill='%230e1012'/%3E%3C/svg%3E">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <a href="dashboard.html" class="brand" aria-label="Eventia, ir al resumen">
-        <span class="brand-mark" aria-hidden="true">E</span>Eventia
-      </a>
-      <nav class="nav" aria-label="Principal">
-        <a href="dashboard.html">Resumen</a>
-        <a href="eventos.html">Eventos</a>
-        <a href="charlas.html">Charlas</a>
-        <a href="ponentes.html">Ponentes</a>
-        <a href="asistentes.html">Asistentes</a>
-        <a href="inscripciones.html">Inscripciones</a>
-        <a href="certificados.html" aria-current="page">Certificados</a>
-        <a href="usuarios.html">Usuarios</a>
-      </nav>
-      <a class="logout" href="login.html">Cerrar sesión</a>
-    </aside>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <header class="topbar" id="topbar"></header>
     <main class="content">
-      <div class="page-head">
-        <div>
-          <h1>Certificados</h1>
-          <p>Se emite un certificado por inscripción con asistencia confirmada.</p>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm" id="open-new">Emitir certificado</button>
+      <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><h1 class="page-title">Gestión de certificados</h1><p class="page-subtitle mb-0">Registro, consulta y administración de certificados.</p></div>
+        <button type="button" class="btn btn-eventia btn-sm px-3" id="btnNuevo"><i class="bi bi-plus-lg me-1"></i> Nuevo certificado</button>
       </div>
-
-      <section class="panel" aria-label="Listado de certificados">
-        <div class="toolbar">
-          <input class="input" id="search" type="search" placeholder="Buscar en certificados" aria-label="Buscar en certificados">
-          <span class="note">Mostrando <span id="count"></span></span>
+      <div id="alerta" aria-live="polite"></div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-patch-check"></i></div><div>
+    <p class="kpi-label">Certificados emitidos</p><p class="kpi-value" id="totalCertificados">—</p><span class="kpi-delta">Registros en el sistema</span></div></div></div>
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-hourglass-split"></i></div><div>
+    <p class="kpi-label">Por emitir</p><p class="kpi-value" id="totalPendientes">—</p><span class="kpi-delta">Asistencias sin certificado</span></div></div></div>
+</div>
+      <section class="panel-card mb-4" id="panelFormulario">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div><h2 class="panel-title" id="tituloFormulario">Registrar certificado</h2><p class="panel-subtitle mb-0">Completa los datos solicitados.</p></div>
+          <span class="kpi-icon"><i class="bi bi-patch-check"></i></span>
         </div>
-        <p class="status" id="status" role="status"></p>
-        <div class="table-wrap">
-          <table class="wide" data-table data-unique="Codigo">
-            <thead><tr><th scope="col" class="id" data-field="Id">Id</th><th scope="col" class="" data-field="Codigo">Código</th><th scope="col" class="" data-field="asistente">Asistente</th><th scope="col" class="" data-field="charla">Charla</th><th scope="col" class="" data-field="InscripcionId">Inscripción</th><th scope="col" class="" data-field="FechaEmision">Emisión</th></tr></thead>
-            <tbody>
-            <tr id="cert-1" data-id="1"><td class="id">1</td><td><span class="code">CERT-2026-0001</span></td><td><a href="asistentes.html#asistente-1">Laura Martínez</a></td><td><a href="charlas.html#charla-1">El futuro de los eventos híbridos</a></td><td><a href="inscripciones.html#insc-1">#1</a></td><td>20 sep 2026</td></tr>
-            <tr id="cert-2" data-id="2"><td class="id">2</td><td><span class="code">CERT-2026-0002</span></td><td><a href="asistentes.html#asistente-1">Laura Martínez</a></td><td><a href="charlas.html#charla-2">Analítica en tiempo real</a></td><td><a href="inscripciones.html#insc-2">#2</a></td><td>20 sep 2026</td></tr>
-            <tr id="cert-3" data-id="3"><td class="id">3</td><td><span class="code">CERT-2026-0003</span></td><td><a href="asistentes.html#asistente-2">Diego Fernández</a></td><td><a href="charlas.html#charla-1">El futuro de los eventos híbridos</a></td><td><a href="inscripciones.html#insc-3">#3</a></td><td>20 sep 2026</td></tr>
-            <tr id="cert-4" data-id="4"><td class="id">4</td><td><span class="code">CERT-2026-0004</span></td><td><a href="asistentes.html#asistente-3">Valeria Choque</a></td><td><a href="charlas.html#charla-1">El futuro de los eventos híbridos</a></td><td><a href="inscripciones.html#insc-4">#4</a></td><td>20 sep 2026</td></tr>
-            <tr id="cert-5" data-id="5"><td class="id">5</td><td><span class="code">CERT-2026-0005</span></td><td><a href="asistentes.html#asistente-3">Valeria Choque</a></td><td><a href="charlas.html#charla-3">Pagos digitales para eventos</a></td><td><a href="inscripciones.html#insc-5">#5</a></td><td>20 sep 2026</td></tr>
-            <tr id="cert-6" data-id="6"><td class="id">6</td><td><span class="code">CERT-2026-0006</span></td><td><a href="asistentes.html#asistente-4">Sebastián Rojas</a></td><td><a href="charlas.html#charla-2">Analítica en tiempo real</a></td><td><a href="inscripciones.html#insc-6">#6</a></td><td>20 sep 2026</td></tr>
-            <tr id="cert-7" data-id="7"><td class="id">7</td><td><span class="code">CERT-2026-0007</span></td><td><a href="asistentes.html#asistente-6">Jorge Álvarez</a></td><td><a href="charlas.html#charla-4">Datos abiertos en la práctica</a></td><td><a href="inscripciones.html#insc-8">#8</a></td><td>25 oct 2026</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="empty" id="empty" hidden>No hay resultados. Prueba con otra búsqueda.</p>
-      </section>
-
-      <dialog id="new-dialog" aria-labelledby="dlg-title">
-        <h2 id="dlg-title">Emitir certificado</h2>
-        <form class="form" method="dialog">
-          <div class="field"><label for="f-InscripcionId">Inscripción</label><select class="input" id="f-InscripcionId" name="InscripcionId" required><option value="" selected disabled>Elige una opción</option><option value="9">#9 · Jorge Álvarez · Pipelines con poco presupuesto</option></select></div>
-          <div class="field"><label for="f-Codigo">Código</label><input class="input" id="f-Codigo" name="Codigo" type="text" required></div>
-          <div class="field"><label for="f-FechaEmision">Fecha de emisión</label><input class="input" id="f-FechaEmision" name="FechaEmision" type="date" required></div>
-          <div class="dialog-actions">
-            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Cancelar</button>
-            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <form id="form" class="row g-3">
+          <input type="hidden" id="registroId">
+          <div class="col-12 col-md-5"><label class="form-label" for="inscripcion">Inscripción (solo con asistencia)</label><select class="form-select" id="inscripcion" required></select></div>
+          <div class="col-12 col-md-4"><label class="form-label" for="codigo">Código</label><div class="input-group"><input type="text" class="form-control" id="codigo" maxlength="20" required><button type="button" class="btn btn-outline-secondary" id="btnGenerar">Generar</button></div></div>
+          <div class="col-12 col-md-3"><label class="form-label" for="emision">Fecha de emisión</label><input type="date" class="form-control" id="emision"  required></div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-eventia px-3" id="btnGuardar"><i class="bi bi-check-lg me-1"></i> Guardar certificado</button>
+            <button type="button" class="btn btn-outline-secondary px-3" id="btnLimpiar">Limpiar</button>
           </div>
         </form>
-      </dialog>
+      </section>
+      <section class="panel-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div><h2 class="panel-title">Listado de certificados</h2><p class="panel-subtitle mb-0">Registrados en la base de datos.</p></div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="btnActualizar"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+        </div>
+        <div class="table-responsive"><table class="table table-custom align-middle mb-0">
+          <thead><tr><th>ID</th><th>Código</th><th>Asistente</th><th>Charla</th><th>Emisión</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla"><tr><td colspan="6" class="text-center text-muted py-4">Cargando...</td></tr></tbody></table></div>
+      </section>
     </main>
   </div>
-  <script src="assets/js/tables.js"></script>
+</div>
+<div class="sidebar-overlay" id="overlay"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/comun.js"></script>
+<script>
+let certificados = [], inscripciones = [], asistentes = [], charlas = [];
+const sesion = montarLayout("certificados", "Buscar certificado...");
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("btnGuardar");
+    btn.disabled = true;
+    try {
+        const id = document.getElementById("registroId").value;
+        const datos = {
+            inscripcionId: Number(document.getElementById("inscripcion").value),
+            codigo: document.getElementById("codigo").value.trim(),
+            fechaEmision: document.getElementById("emision").value || hoyISO()
+        };
+        if (!datos.inscripcionId || !datos.codigo) throw new Error("Selecciona una inscripción e indica el código.");
+        if (id) await api("/certificados/" + encodeURIComponent(id), "PUT", datos, API_CERTIFICADOS);
+        else await api("/certificados", "POST", datos, API_CERTIFICADOS);
+        mostrarAlerta(id ? "Certificado actualizado correctamente." : "Certificado emitido correctamente.", "success");
+        limpiarFormulario();
+        await cargarCertificados();
+    } catch (error) {
+        mostrarAlerta(error.message, "danger");
+    } finally {
+        btn.disabled = false;
+    }
+});
+document.getElementById("btnGenerar").addEventListener("click", () => {
+    document.getElementById("codigo").value = "CERT-" + Math.random().toString(36).slice(2, 10).toUpperCase();
+});
+document.getElementById("btnLimpiar").addEventListener("click", limpiarFormulario);
+document.getElementById("btnActualizar").addEventListener("click", cargarCertificados);
+document.getElementById("btnNuevo").addEventListener("click", () => { limpiarFormulario(); document.getElementById("inscripcion").focus(); });
+if (sesion) cargarCertificados();
+
+const nombreDe = (lista, id, campo) => (lista.find(x => Number(x.id) === Number(id)) || {})[campo] ?? "—";
+const etiquetaInscripcion = i => `${nombreDe(asistentes, i.asistenteId, "nombre")} — ${nombreDe(charlas, i.charlaId, "titulo")}`;
+
+function llenarInscripciones(actual) {
+    const usadas = new Set(certificados.map(c => Number(c.inscripcionId)));
+    const elegibles = inscripciones.filter(i => Number(i.id) === Number(actual) || (esVerdadero(i.asistio) && !usadas.has(Number(i.id))));
+    llenarSelect("inscripcion", elegibles, i => i.id, etiquetaInscripcion, elegibles.length ? "Selecciona una inscripción" : "No hay asistencias pendientes de certificar");
+}
+
+async function cargarCertificados() {
+    const tbody = document.getElementById("tabla");
+    tbody.innerHTML = filaVacia(6, "Cargando certificados...");
+    try {
+        [certificados, inscripciones, asistentes, charlas] = await Promise.all(["/certificados", "/inscripciones", "/asistentes", "/charlas"].map(cargarLista));
+        llenarInscripciones(document.getElementById("registroId").value);
+        if (!document.getElementById("emision").value) document.getElementById("emision").value = hoyISO();
+        const usadas = new Set(certificados.map(c => Number(c.inscripcionId)));
+        document.getElementById("totalCertificados").textContent = certificados.length;
+        document.getElementById("totalPendientes").textContent = inscripciones.filter(i => esVerdadero(i.asistio) && !usadas.has(Number(i.id))).length;
+        tbody.innerHTML = certificados.length ? certificados.map(c => {
+            const ins = inscripciones.find(i => Number(i.id) === Number(c.inscripcionId)) || {};
+            return `<tr><td>${Number(c.id)}</td><td class="fw-medium">${esc(c.codigo)}</td>
+            <td>${esc(nombreDe(asistentes, ins.asistenteId, "nombre"))}</td><td>${esc(nombreDe(charlas, ins.charlaId, "titulo"))}</td>
+            <td>${esc(fechaLegible(c.fechaEmision))}</td>${botonesFila("editarCertificado", "eliminarCertificado", c.id)}</tr>`; }).join("")
+            : filaVacia(6, "No hay certificados emitidos.");
+        aplicarBusqueda();
+    } catch (error) {
+        tbody.innerHTML = filaVacia(6, "No se pudieron cargar los certificados.", "text-danger");
+        mostrarAlerta(error.message, "danger");
+    }
+}
+
+function editarCertificado(id) {
+    const c = certificados.find(x => Number(x.id) === Number(id));
+    if (!c) return;
+    document.getElementById("registroId").value = c.id;
+    llenarInscripciones(c.inscripcionId);
+    document.getElementById("inscripcion").value = c.inscripcionId;
+    document.getElementById("codigo").value = c.codigo || "";
+    document.getElementById("emision").value = fechaISO(c.fechaEmision);
+    document.getElementById("tituloFormulario").textContent = "Editar certificado";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Actualizar certificado';
+    document.getElementById("panelFormulario").scrollIntoView({ behavior: "smooth" });
+}
+
+function limpiarFormulario() {
+    document.getElementById("form").reset();
+    document.getElementById("registroId").value = "";
+    llenarInscripciones(null);
+    document.getElementById("emision").value = hoyISO();
+    document.getElementById("tituloFormulario").textContent = "Registrar certificado";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Guardar certificado';
+}
+
+async function eliminarCertificado(id) {
+    if (!confirm("¿Deseas eliminar este certificado?")) return;
+    try {
+        await api("/certificados/" + encodeURIComponent(id), "DELETE", null, API_CERTIFICADOS);
+        mostrarAlerta("Certificado eliminado correctamente.", "success");
+        await cargarCertificados();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+}
+</script>
 </body>
 </html>

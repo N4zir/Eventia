@@ -6,80 +6,157 @@
   <title>Usuarios | Eventia</title>
   <meta name="theme-color" content="#15181b">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8601C'/%3E%3Cpath d='M10 9h12v3H13.5v2.5H21v3h-7.5V20H22v3H10z' fill='%230e1012'/%3E%3C/svg%3E">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <a href="dashboard.html" class="brand" aria-label="Eventia, ir al resumen">
-        <span class="brand-mark" aria-hidden="true">E</span>Eventia
-      </a>
-      <nav class="nav" aria-label="Principal">
-        <a href="dashboard.html">Resumen</a>
-        <a href="eventos.html">Eventos</a>
-        <a href="charlas.html">Charlas</a>
-        <a href="ponentes.html">Ponentes</a>
-        <a href="asistentes.html">Asistentes</a>
-        <a href="inscripciones.html">Inscripciones</a>
-        <a href="certificados.html">Certificados</a>
-        <a href="usuarios.html" aria-current="page">Usuarios</a>
-      </nav>
-      <a class="logout" href="login.html">Cerrar sesión</a>
-    </aside>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <header class="topbar" id="topbar"></header>
     <main class="content">
-      <div class="page-head">
-        <div>
-          <h1>Usuarios</h1>
-          <p>Cuentas de acceso y su rol. La contraseña nunca se muestra.</p>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm" id="open-new">Nuevo usuario</button>
+      <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><h1 class="page-title">Gestión de usuarios</h1><p class="page-subtitle mb-0">Cuentas de acceso al panel, vinculadas a un asistente.</p></div>
+        <button type="button" class="btn btn-eventia btn-sm px-3" id="btnNuevo"><i class="bi bi-plus-lg me-1"></i> Nuevo usuario</button>
       </div>
-
-      <section class="panel" aria-label="Listado de usuarios">
-        <div class="toolbar">
-          <input class="input" id="search" type="search" placeholder="Buscar en usuarios" aria-label="Buscar en usuarios">
-          <span class="note">Mostrando <span id="count"></span></span>
+      <div id="alerta" aria-live="polite"></div>
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-shield-lock"></i></div><div><p class="kpi-label">Usuarios registrados</p><p class="kpi-value" id="totalUsuarios">—</p><span class="kpi-delta">Cuentas en el sistema</span></div></div></div>
+        <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-person-check"></i></div><div><p class="kpi-label">Usuarios activos</p><p class="kpi-value" id="totalActivos">—</p><span class="kpi-delta">Pueden iniciar sesión</span></div></div></div>
+      </div>
+      <section class="panel-card mb-4" id="panelFormulario">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div><h2 class="panel-title" id="tituloFormulario">Registrar usuario</h2><p class="panel-subtitle mb-0">Completa los datos solicitados.</p></div>
+          <span class="kpi-icon"><i class="bi bi-person-gear"></i></span>
         </div>
-        <p class="status" id="status" role="status"></p>
-        <div class="table-wrap">
-          <table class="wide" data-table data-unique="NombreUsuario">
-            <thead><tr><th scope="col" class="id" data-field="Id">Id</th><th scope="col" class="" data-field="NombreUsuario">Usuario</th><th scope="col" class="" data-field="Rol">Rol</th><th scope="col" class="" data-field="AsistenteId">Asistente</th><th scope="col" class="" data-field="Activo">Estado</th></tr></thead>
-            <tbody>
-            <tr id="usuario-1" data-id="1"><td class="id">1</td><td>admin</td><td><span class="tag tag--full">administrador</span></td><td>—</td><td><span class="tag tag--open">Activo</span></td></tr>
-            <tr id="usuario-2" data-id="2"><td class="id">2</td><td>organizacion</td><td><span class="tag tag--open">organizador</span></td><td>—</td><td><span class="tag tag--open">Activo</span></td></tr>
-            <tr id="usuario-3" data-id="3"><td class="id">3</td><td>lmartinez</td><td><span class="tag tag--draft">asistente</span></td><td><a href="asistentes.html#asistente-1">Laura Martínez</a></td><td><span class="tag tag--open">Activo</span></td></tr>
-            <tr id="usuario-4" data-id="4"><td class="id">4</td><td>dfernandez</td><td><span class="tag tag--draft">asistente</span></td><td><a href="asistentes.html#asistente-2">Diego Fernández</a></td><td><span class="tag tag--open">Activo</span></td></tr>
-            <tr id="usuario-5" data-id="5"><td class="id">5</td><td>vchoque</td><td><span class="tag tag--draft">asistente</span></td><td><a href="asistentes.html#asistente-3">Valeria Choque</a></td><td><span class="tag tag--open">Activo</span></td></tr>
-            <tr id="usuario-6" data-id="6"><td class="id">6</td><td>srojas</td><td><span class="tag tag--draft">asistente</span></td><td><a href="asistentes.html#asistente-4">Sebastián Rojas</a></td><td><span class="tag tag--open">Activo</span></td></tr>
-            <tr id="usuario-7" data-id="7"><td class="id">7</td><td>mflores</td><td><span class="tag tag--draft">asistente</span></td><td><a href="asistentes.html#asistente-5">Mariana Flores</a></td><td><span class="tag tag--draft">Inactivo</span></td></tr>
-            <tr id="usuario-8" data-id="8"><td class="id">8</td><td>jalvarez</td><td><span class="tag tag--draft">asistente</span></td><td><a href="asistentes.html#asistente-6">Jorge Álvarez</a></td><td><span class="tag tag--open">Activo</span></td></tr>
-            <tr id="usuario-9" data-id="9"><td class="id">9</td><td>ngutierrez</td><td><span class="tag tag--draft">asistente</span></td><td><a href="asistentes.html#asistente-8">Nicolás Gutiérrez</a></td><td><span class="tag tag--open">Activo</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="empty" id="empty" hidden>No hay resultados. Prueba con otra búsqueda.</p>
-      </section>
-
-      <dialog id="new-dialog" aria-labelledby="dlg-title">
-        <h2 id="dlg-title">Nuevo usuario</h2>
-        <form class="form" method="dialog">
-          <div class="field"><label for="f-NombreUsuario">Nombre de usuario</label><input class="input" id="f-NombreUsuario" name="NombreUsuario" type="text" required></div>
-          <div class="field"><label for="f-Rol">Rol</label><select class="input" id="f-Rol" name="Rol" required><option value="" selected disabled>Elige una opción</option><option value="administrador">administrador</option><option value="organizador">organizador</option><option value="asistente">asistente</option></select></div>
-          <div class="field"><label for="f-AsistenteId">Asistente vinculado (opcional)</label><select class="input" id="f-AsistenteId" name="AsistenteId"><option value="" selected>Sin asignar</option><option value="1">Laura Martínez</option><option value="2">Diego Fernández</option><option value="3">Valeria Choque</option><option value="4">Sebastián Rojas</option><option value="5">Mariana Flores</option><option value="6">Jorge Álvarez</option><option value="7">Paola Mamani</option><option value="8">Nicolás Gutiérrez</option></select></div>
-          <div class="field"><label for="f-ClaveTemporal">Contraseña temporal</label><input class="input" id="f-ClaveTemporal" name="ClaveTemporal" type="password" minlength="8" autocomplete="new-password" required></div>
-          <div class="field"><label class="check"><input type="checkbox" id="f-Activo" name="Activo" data-yes="Activo" data-no="Inactivo" checked> Cuenta activa</label></div>
-        <p class="demo-note">Vista previa: la contraseña debe guardarse como hash (ClaveHash) desde tu backend, nunca en texto plano.</p>
-          <div class="dialog-actions">
-            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Cancelar</button>
-            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <form id="form" class="row g-3">
+          <input type="hidden" id="registroId">
+          <div class="col-12 col-md-4"><label class="form-label" for="uAsistente">Asistente</label><select class="form-select" id="uAsistente" required></select></div>
+          <div class="col-12 col-md-4"><label class="form-label" for="uNombre">Nombre de usuario</label><input type="text" class="form-control" id="uNombre" maxlength="50" autocomplete="off" required></div>
+          <div class="col-12 col-md-4"><label class="form-label" for="uClave">Contraseña</label><input type="password" class="form-control" id="uClave" autocomplete="new-password" minlength="8"><div class="form-text" id="ayudaClave">Mínimo 8 caracteres.</div></div>
+          <div class="col-12 col-md-4"><label class="form-label" for="uRol">Rol</label>
+            <select class="form-select" id="uRol" required><option value="administrador">Administrador</option><option value="organizador">Organizador</option><option value="asistente" selected>Asistente</option></select></div>
+          <div class="col-12 col-md-4 d-flex align-items-end"><div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" role="switch" id="uActivo" checked><label class="form-check-label" for="uActivo">Cuenta activa</label></div></div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-eventia px-3" id="btnGuardar"><i class="bi bi-check-lg me-1"></i> Guardar usuario</button>
+            <button type="button" class="btn btn-outline-secondary px-3" id="btnLimpiar">Limpiar</button>
           </div>
         </form>
-      </dialog>
+      </section>
+      <section class="panel-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div><h2 class="panel-title">Listado de usuarios</h2><p class="panel-subtitle mb-0">Registrados en la base de datos.</p></div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="btnActualizar"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+        </div>
+        <div class="table-responsive"><table class="table table-custom align-middle mb-0">
+          <thead><tr><th>ID</th><th>Usuario</th><th>Asistente</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla"><tr><td colspan="6" class="text-center text-muted py-4">Cargando...</td></tr></tbody></table></div>
+      </section>
     </main>
   </div>
-  <script src="assets/js/tables.js"></script>
+</div>
+<div class="sidebar-overlay" id="overlay"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/comun.js"></script>
+<script>
+let usuarios = [], asistentes = [];
+const ROLES = { administrador: "Administrador", organizador: "Organizador", asistente: "Asistente" };
+
+document.addEventListener("DOMContentLoaded", () => {
+    const sesion = montarLayout("usuarios", "Buscar usuario...");
+    if (!sesion) return;
+    document.getElementById("form").addEventListener("submit", guardarUsuario);
+    document.getElementById("btnLimpiar").addEventListener("click", limpiarFormulario);
+    document.getElementById("btnActualizar").addEventListener("click", cargarUsuarios);
+    document.getElementById("btnNuevo").addEventListener("click", () => { limpiarFormulario(); document.getElementById("uNombre").focus(); });
+    cargarUsuarios();
+});
+
+async function cargarUsuarios() {
+    const tbody = document.getElementById("tabla");
+    tbody.innerHTML = filaVacia(6, "Cargando usuarios...");
+    try {
+        [usuarios, asistentes] = await Promise.all(["/usuarios", "/asistentes"].map(cargarLista));
+        llenarSelect("uAsistente", asistentes, a => a.id, a => `${a.nombre} (${a.correo})`, "Selecciona un asistente");
+        document.getElementById("totalUsuarios").textContent = usuarios.length;
+        document.getElementById("totalActivos").textContent = usuarios.filter(u => esVerdadero(u.activo)).length;
+        const nombreAsistente = id => (asistentes.find(a => Number(a.id) === Number(id)) || {}).nombre || "—";
+        tbody.innerHTML = usuarios.length ? usuarios.map(u => `
+            <tr><td>${Number(u.id)}</td><td class="fw-medium">${esc(u.nombreUsuario)}</td><td>${esc(nombreAsistente(u.asistenteId))}</td>
+            <td><span class="tag ${u.rol === "administrador" ? "tag--dark" : "tag--muted"}">${esc(ROLES[u.rol] || u.rol)}</span></td>
+            <td><span class="tag ${esVerdadero(u.activo) ? "tag--accent" : "tag--muted"}">${esVerdadero(u.activo) ? "Activo" : "Inactivo"}</span></td>
+            ${botonesFila("editarUsuario", "eliminarUsuario", u.id)}</tr>`).join("")
+            : filaVacia(6, "No hay usuarios registrados.");
+        aplicarBusqueda();
+    } catch (error) {
+        tbody.innerHTML = filaVacia(6, "No se pudieron cargar los usuarios.", "text-danger");
+        mostrarAlerta(error.message, "danger");
+    }
+}
+
+function editarUsuario(id) {
+    const u = usuarios.find(x => Number(x.id) === Number(id));
+    if (!u) return;
+    document.getElementById("registroId").value = u.id;
+    document.getElementById("uAsistente").value = u.asistenteId;
+    document.getElementById("uNombre").value = u.nombreUsuario || "";
+    document.getElementById("uClave").value = "";
+    document.getElementById("ayudaClave").textContent = "Déjala vacía para conservar la contraseña actual.";
+    const rol = document.getElementById("uRol");
+    if (![...rol.options].some(o => o.value === u.rol)) rol.add(new Option(u.rol, u.rol));
+    rol.value = u.rol;
+    document.getElementById("uActivo").checked = esVerdadero(u.activo);
+    document.getElementById("tituloFormulario").textContent = "Editar usuario";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Actualizar usuario';
+    document.getElementById("panelFormulario").scrollIntoView({ behavior: "smooth" });
+}
+
+function limpiarFormulario() {
+    document.getElementById("form").reset();
+    document.getElementById("registroId").value = "";
+    document.getElementById("uActivo").checked = true;
+    document.getElementById("ayudaClave").textContent = "Mínimo 8 caracteres.";
+    document.getElementById("tituloFormulario").textContent = "Registrar usuario";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Guardar usuario';
+}
+
+async function guardarUsuario(e) {
+    e.preventDefault();
+    const id = document.getElementById("registroId").value;
+    const clave = document.getElementById("uClave").value;
+    const datos = {
+        asistenteId: Number(document.getElementById("uAsistente").value),
+        nombreUsuario: document.getElementById("uNombre").value.trim(),
+        rol: document.getElementById("uRol").value,
+        activo: document.getElementById("uActivo").checked,
+    };
+    if (!datos.asistenteId || !datos.nombreUsuario) { mostrarAlerta("Asistente y nombre de usuario son obligatorios.", "warning"); return; }
+    if (!id && clave.length < 8) { mostrarAlerta("La contraseña debe tener al menos 8 caracteres.", "warning"); return; }
+    if (id && clave && clave.length < 8) { mostrarAlerta("La nueva contraseña debe tener al menos 8 caracteres.", "warning"); return; }
+    if (clave) datos.clave = clave;
+    const boton = document.getElementById("btnGuardar");
+    boton.disabled = true;
+    try {
+        if (id) { await api("/usuarios/" + encodeURIComponent(id), "PUT", datos, API_USUARIOS); mostrarAlerta("Usuario actualizado correctamente.", "success"); }
+        else { await api("/usuarios", "POST", datos, API_USUARIOS); mostrarAlerta("Usuario registrado correctamente.", "success"); }
+        limpiarFormulario();
+        await cargarUsuarios();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+    finally { boton.disabled = false; }
+}
+
+async function eliminarUsuario(id) {
+    if (!confirm("¿Deseas eliminar este usuario?")) return;
+    try {
+        await api("/usuarios/" + encodeURIComponent(id), "DELETE", null, API_USUARIOS);
+        mostrarAlerta("Usuario eliminado correctamente.", "success");
+        await cargarUsuarios();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+}
+</script>
 </body>
 </html>

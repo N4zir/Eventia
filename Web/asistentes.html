@@ -9,72 +9,203 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <a href="dashboard.html" class="brand" aria-label="Eventia, ir al resumen">
-        <span class="brand-mark" aria-hidden="true">E</span>Eventia
-      </a>
-      <nav class="nav" aria-label="Principal">
-        <a href="dashboard.html">Resumen</a>
-        <a href="eventos.html">Eventos</a>
-        <a href="charlas.html">Charlas</a>
-        <a href="ponentes.html">Ponentes</a>
-        <a href="asistentes.html" aria-current="page">Asistentes</a>
-        <a href="inscripciones.html">Inscripciones</a>
-        <a href="certificados.html">Certificados</a>
-        <a href="usuarios.html">Usuarios</a>
-      </nav>
-      <a class="logout" href="login.html">Cerrar sesión</a>
-    </aside>
-    <main class="content">
-      <div class="page-head">
-        <div>
-          <h1>Asistentes</h1>
-          <p>Personas inscritas. La cuenta de acceso es opcional.</p>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm" id="open-new">Nuevo asistente</button>
-      </div>
+<div class="app-layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <div class="main-area">
+        <header class="topbar" id="topbar"></header>
+        <main class="content">
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <h1 class="page-title">Gestión de asistentes</h1>
+                    <p class="page-subtitle mb-0">Registro, consulta y administración de asistentes.</p>
+                </div>
+                <button type="button" class="btn btn-eventia btn-sm px-3" id="btnNuevoAsistente">
+                    <i class="bi bi-plus-lg me-1"></i> Nuevo asistente
+                </button>
+            </div>
 
-      <section class="panel" aria-label="Listado de asistentes">
-        <div class="toolbar">
-          <input class="input" id="search" type="search" placeholder="Buscar en asistentes" aria-label="Buscar en asistentes">
-          <span class="note">Mostrando <span id="count"></span></span>
-        </div>
-        <p class="status" id="status" role="status"></p>
-        <div class="table-wrap">
-          <table class="wide" data-table data-unique="Correo">
-            <thead><tr><th scope="col" class="id" data-field="Id">Id</th><th scope="col" class="" data-field="Nombre">Nombre</th><th scope="col" class="" data-field="Correo">Correo</th><th scope="col" class="" data-field="usuario">Usuario</th><th scope="col" class="" data-field="cuenta">Cuenta</th><th scope="col" class="num" data-field="inscripciones" data-num>Inscripciones</th></tr></thead>
-            <tbody>
-            <tr id="asistente-1" data-id="1"><td class="id">1</td><td>Laura Martínez</td><td>laura.martinez@correo.com</td><td><a href="usuarios.html#usuario-3">lmartinez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Laura%20Mart%C3%ADnez">2</a></td></tr>
-            <tr id="asistente-2" data-id="2"><td class="id">2</td><td>Diego Fernández</td><td>diego.fernandez@correo.com</td><td><a href="usuarios.html#usuario-4">dfernandez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Diego%20Fern%C3%A1ndez">1</a></td></tr>
-            <tr id="asistente-3" data-id="3"><td class="id">3</td><td>Valeria Choque</td><td>valeria.choque@correo.com</td><td><a href="usuarios.html#usuario-5">vchoque</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Valeria%20Choque">2</a></td></tr>
-            <tr id="asistente-4" data-id="4"><td class="id">4</td><td>Sebastián Rojas</td><td>sebastian.rojas@correo.com</td><td><a href="usuarios.html#usuario-6">srojas</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Sebasti%C3%A1n%20Rojas">1</a></td></tr>
-            <tr id="asistente-5" data-id="5"><td class="id">5</td><td>Mariana Flores</td><td>mariana.flores@correo.com</td><td><a href="usuarios.html#usuario-7">mflores</a></td><td><span class="tag tag--draft">Inactiva</span></td><td class="num"><a href="inscripciones.html?q=Mariana%20Flores">1</a></td></tr>
-            <tr id="asistente-6" data-id="6"><td class="id">6</td><td>Jorge Álvarez</td><td>jorge.alvarez@correo.com</td><td><a href="usuarios.html#usuario-8">jalvarez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Jorge%20%C3%81lvarez">2</a></td></tr>
-            <tr id="asistente-7" data-id="7"><td class="id">7</td><td>Paola Mamani</td><td>paola.mamani@correo.com</td><td>—</td><td><span class="tag tag--draft">Sin cuenta</span></td><td class="num"><a href="inscripciones.html?q=Paola%20Mamani">1</a></td></tr>
-            <tr id="asistente-8" data-id="8"><td class="id">8</td><td>Nicolás Gutiérrez</td><td>nicolas.gutierrez@correo.com</td><td><a href="usuarios.html#usuario-9">ngutierrez</a></td><td><span class="tag tag--open">Activa</span></td><td class="num"><a href="inscripciones.html?q=Nicol%C3%A1s%20Guti%C3%A9rrez">2</a></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="empty" id="empty" hidden>No hay resultados. Prueba con otra búsqueda.</p>
-      </section>
+            <div id="alerta" aria-live="polite"></div>
 
-      <dialog id="new-dialog" aria-labelledby="dlg-title">
-        <h2 id="dlg-title">Nuevo asistente</h2>
-        <form class="form" method="dialog">
-          <div class="field"><label for="f-Nombre">Nombre completo</label><input class="input" id="f-Nombre" name="Nombre" type="text" required></div>
-          <div class="field"><label for="f-Correo">Correo electrónico</label><input class="input" id="f-Correo" name="Correo" type="email" required></div>
-          <div class="dialog-actions">
-            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Cancelar</button>
-            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
-          </div>
-        </form>
-      </dialog>
-    </main>
-  </div>
-  <script src="assets/js/tables.js"></script>
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="kpi-card">
+                        <div class="kpi-icon"><i class="bi bi-people"></i></div>
+                        <div>
+                            <p class="kpi-label">Asistentes registrados</p>
+                            <p class="kpi-value" id="totalAsistentes">—</p>
+                            <span class="kpi-delta">Registros en el sistema</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="panel-card mb-4" id="panelFormulario">
+                <div class="panel-header d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="panel-title" id="tituloFormulario">Registrar asistente</h2>
+                        <p class="panel-subtitle mb-0">Completa los datos solicitados.</p>
+                    </div>
+                    <span class="kpi-icon"><i class="bi bi-person-vcard"></i></span>
+                </div>
+
+                <form id="formAsistente" class="row g-3">
+                    <input type="hidden" id="asistenteId">
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="cNombre">Nombre completo</label>
+                        <input type="text" class="form-control" id="cNombre" maxlength="100" required>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <label class="form-label" for="cCorreo">Correo</label>
+                        <input type="text" class="form-control" id="cCorreo" maxlength="100" required>
+                    </div>
+                    <div class="col-12 d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-eventia px-3" id="btnGuardarAsistente">
+                            <i class="bi bi-check-lg me-1"></i> Guardar asistente
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary px-3" id="btnLimpiar">
+                            Limpiar
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel-card">
+                <div class="panel-header d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                    <div>
+                        <h2 class="panel-title">Listado de asistentes</h2>
+                        <p class="panel-subtitle mb-0">Asistentes registrados en la base de datos.</p>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btnActualizar">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+                    </button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead>
+                            <tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tablaAsistentes">
+                            <tr><td colspan="4" class="text-center text-muted py-4">Cargando asistentes...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+<div class="sidebar-overlay" id="overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/comun.js"></script>
+<script>
+let asistentes = [];
+
+document.addEventListener("DOMContentLoaded", () => {
+    const sesion = montarLayout("asistentes", "Buscar asistente...");
+    if (!sesion) return;
+    document.getElementById("formAsistente").addEventListener("submit", guardarAsistente);
+    document.getElementById("btnLimpiar").addEventListener("click", limpiarFormulario);
+    document.getElementById("btnActualizar").addEventListener("click", cargarAsistentes);
+    document.getElementById("btnNuevoAsistente").addEventListener("click", () => {
+        limpiarFormulario();
+        document.getElementById("cNombre").focus();
+    });
+    cargarAsistentes();
+});
+
+async function cargarAsistentes() {
+    const tbody = document.getElementById("tablaAsistentes");
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">Cargando asistentes...</td></tr>';
+    try {
+        const resultado = await api("/asistentes", "GET", null, API_ASISTENTES);
+        if (!Array.isArray(resultado)) throw new Error("La API no devolvió una lista válida de asistentes.");
+        asistentes = resultado;
+        document.getElementById("totalAsistentes").textContent = asistentes.length;
+        if (!asistentes.length) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-4">No hay asistentes registrados.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = asistentes.map(c => `
+            <tr>
+                <td>${Number(c.id)}</td>
+                <td class="fw-medium">${esc(c.nombre)}</td>
+                <td>${esc(c.correo)}</td>
+                <td class="text-nowrap">
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editarAsistente(${Number(c.id)})"><i class="bi bi-pencil"></i> Editar</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="eliminarAsistente(${Number(c.id)})"><i class="bi bi-trash"></i> Eliminar</button>
+                </td>
+            </tr>`).join("");
+    } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">No se pudieron cargar los asistentes.</td></tr>';
+        mostrarAlerta(error.message, "danger");
+    }
+    aplicarBusqueda();
+}
+
+function editarAsistente(id) {
+    const c = asistentes.find(x => Number(x.id) === Number(id));
+    if (!c) return;
+    document.getElementById("asistenteId").value = c.id;
+    document.getElementById("cNombre").value = c.nombre || "";
+    document.getElementById("cCorreo").value = c.correo || "";
+    document.getElementById("tituloFormulario").textContent = "Editar asistente";
+    document.getElementById("btnGuardarAsistente").innerHTML = '<i class="bi bi-check-lg me-1"></i> Actualizar asistente';
+    document.getElementById("panelFormulario").scrollIntoView({ behavior: "smooth" });
+}
+
+function limpiarFormulario() {
+    document.getElementById("formAsistente").reset();
+    document.getElementById("asistenteId").value = "";
+    document.getElementById("tituloFormulario").textContent = "Registrar asistente";
+    document.getElementById("btnGuardarAsistente").innerHTML = '<i class="bi bi-check-lg me-1"></i> Guardar asistente';
+}
+
+async function guardarAsistente(e) {
+    e.preventDefault();
+    const id = document.getElementById("asistenteId").value;
+    const datos = {
+        nombre: document.getElementById("cNombre").value.trim(),
+        correo: document.getElementById("cCorreo").value.trim(),
+    };
+    if (!datos.nombre || !datos.correo) {
+        mostrarAlerta("Nombre y correo son obligatorios.", "warning");
+        return;
+    }
+    const boton = document.getElementById("btnGuardarAsistente");
+    boton.disabled = true;
+    try {
+        if (id) {
+            await api("/asistentes/" + encodeURIComponent(id), "PUT", datos, API_ASISTENTES);
+            mostrarAlerta("Asistente actualizado correctamente.", "success");
+        } else {
+            await api("/asistentes", "POST", datos, API_ASISTENTES);
+            mostrarAlerta("Asistente registrado correctamente.", "success");
+        }
+        limpiarFormulario();
+        await cargarAsistentes();
+    } catch (error) {
+        mostrarAlerta(error.message, "danger");
+    } finally {
+        boton.disabled = false;
+    }
+}
+
+async function eliminarAsistente(id) {
+    if (!confirm("¿Deseas eliminar este asistente? Si tiene registros relacionados, SQL Server puede impedir la eliminación.")) return;
+    try {
+        await api("/asistentes/" + encodeURIComponent(id), "DELETE", null, API_ASISTENTES);
+        mostrarAlerta("Asistente eliminado correctamente.", "success");
+        await cargarAsistentes();
+    } catch (error) {
+        mostrarAlerta(error.message, "danger");
+    }
+}
+</script>
 </body>
 </html>
+

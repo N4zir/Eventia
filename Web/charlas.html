@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Charlas | Eventia</title>
+  <meta name="theme-color" content="#15181b">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8601C'/%3E%3Cpath d='M10 9h12v3H13.5v2.5H21v3h-7.5V20H22v3H10z' fill='%230e1012'/%3E%3C/svg%3E">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <header class="topbar" id="topbar"></header>
+    <main class="content">
+      <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><h1 class="page-title">Gestión de charlas</h1><p class="page-subtitle mb-0">Registro, consulta y administración de charlas.</p></div>
+        <button type="button" class="btn btn-eventia btn-sm px-3" id="btnNuevo"><i class="bi bi-plus-lg me-1"></i> Nueva charla</button>
+      </div>
+      <div id="alerta" aria-live="polite"></div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-mic"></i></div><div>
+    <p class="kpi-label">Charlas registradas</p><p class="kpi-value" id="totalCharlas">—</p><span class="kpi-delta">Programadas en el sistema</span></div></div></div>
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-person-check"></i></div><div>
+    <p class="kpi-label">Cupo total</p><p class="kpi-value" id="totalCupo">—</p><span class="kpi-delta">Plazas sumando todas las charlas</span></div></div></div>
+</div>
+      <section class="panel-card mb-4" id="panelFormulario">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div><h2 class="panel-title" id="tituloFormulario">Registrar charla</h2><p class="panel-subtitle mb-0">Completa los datos solicitados.</p></div>
+          <span class="kpi-icon"><i class="bi bi-mic"></i></span>
+        </div>
+        <form id="form" class="row g-3">
+          <input type="hidden" id="registroId">
+          <div class="col-12 col-md-4"><label class="form-label" for="evento">Evento</label><select class="form-select" id="evento" required></select></div>
+          <div class="col-12 col-md-8"><label class="form-label" for="titulo">Título</label><input type="text" class="form-control" id="titulo" maxlength="150" required></div>
+          <div class="col-12 col-md-4"><label class="form-label" for="ponente">Ponente</label><select class="form-select" id="ponente" required></select></div>
+          <div class="col-6 col-md-2"><label class="form-label" for="sala">Sala</label><input type="text" class="form-control" id="sala" maxlength="20" required></div>
+          <div class="col-6 col-md-3"><label class="form-label" for="hora">Hora de inicio</label><input type="time" class="form-control" id="hora"  required></div>
+          <div class="col-6 col-md-3"><label class="form-label" for="cupo">Cupo</label><input type="number" class="form-control" id="cupo" min="1" step="1" required></div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-eventia px-3" id="btnGuardar"><i class="bi bi-check-lg me-1"></i> Guardar charla</button>
+            <button type="button" class="btn btn-outline-secondary px-3" id="btnLimpiar">Limpiar</button>
+          </div>
+        </form>
+      </section>
+      <section class="panel-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div><h2 class="panel-title">Listado de charlas</h2><p class="panel-subtitle mb-0">Registrados en la base de datos.</p></div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="btnActualizar"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+        </div>
+        <div class="table-responsive"><table class="table table-custom align-middle mb-0">
+          <thead><tr><th>ID</th><th>Título</th><th>Evento</th><th>Ponente</th><th>Sala</th><th>Hora</th><th>Inscritos / cupo</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla"><tr><td colspan="8" class="text-center text-muted py-4">Cargando...</td></tr></tbody></table></div>
+      </section>
+    </main>
+  </div>
+</div>
+<div class="sidebar-overlay" id="overlay"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/comun.js"></script>
+<script>
+let charlas = [], eventos = [], ponentes = [], inscripciones = [];
+const sesion = montarLayout("charlas", "Buscar charla...");
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("btnGuardar");
+    btn.disabled = true;
+    try {
+        const id = document.getElementById("registroId").value;
+        const datos = {
+            eventoId: Number(document.getElementById("evento").value),
+            ponenteId: Number(document.getElementById("ponente").value),
+            titulo: document.getElementById("titulo").value.trim(),
+            sala: document.getElementById("sala").value.trim(),
+            horaInicio: document.getElementById("hora").value,
+            cupo: Number(document.getElementById("cupo").value)
+        };
+        if (!datos.eventoId || !datos.ponenteId || !datos.titulo || !datos.sala || !datos.horaInicio || datos.cupo < 1)
+            throw new Error("Completa todos los campos; el cupo debe ser al menos 1.");
+        if (id) await api("/charlas/" + encodeURIComponent(id), "PUT", datos, API_CHARLAS);
+        else await api("/charlas", "POST", datos, API_CHARLAS);
+        mostrarAlerta(id ? "Charla actualizada correctamente." : "Charla registrada correctamente.", "success");
+        limpiarFormulario();
+        await cargarCharlas();
+    } catch (error) {
+        mostrarAlerta(error.message, "danger");
+    } finally {
+        btn.disabled = false;
+    }
+});
+document.getElementById("btnLimpiar").addEventListener("click", limpiarFormulario);
+document.getElementById("btnActualizar").addEventListener("click", cargarCharlas);
+document.getElementById("btnNuevo").addEventListener("click", () => { limpiarFormulario(); document.getElementById("titulo").focus(); });
+if (sesion) cargarCharlas();
+
+async function cargarCharlas() {
+    const tbody = document.getElementById("tabla");
+    tbody.innerHTML = filaVacia(8, "Cargando charlas...");
+    try {
+        [charlas, eventos, ponentes, inscripciones] = await Promise.all(["/charlas", "/eventos", "/ponentes", "/inscripciones"].map(cargarLista));
+        llenarSelect("evento", eventos, e => e.id, e => e.nombre, "Selecciona un evento");
+        llenarSelect("ponente", ponentes, p => p.id, p => `${p.nombre} (${p.institucion})`, "Selecciona un ponente");
+        document.getElementById("totalCharlas").textContent = charlas.length;
+        document.getElementById("totalCupo").textContent = charlas.reduce((s, c) => s + Number(c.cupo || 0), 0);
+        const nombre = (lista, id, campo) => (lista.find(x => Number(x.id) === Number(id)) || {})[campo] ?? "—";
+        tbody.innerHTML = charlas.length ? charlas.map(c => `
+            <tr><td>${Number(c.id)}</td><td class="fw-medium">${esc(c.titulo)}</td>
+            <td>${esc(nombre(eventos, c.eventoId, "nombre"))}</td><td>${esc(nombre(ponentes, c.ponenteId, "nombre"))}</td>
+            <td>${esc(c.sala)}</td><td>${esc(String(c.horaInicio || "").slice(0, 5))}</td>
+            <td>${inscripciones.filter(i => Number(i.charlaId) === Number(c.id)).length} / ${Number(c.cupo)}</td>
+            ${botonesFila("editarCharla", "eliminarCharla", c.id)}</tr>`).join("")
+            : filaVacia(8, "No hay charlas registradas.");
+        aplicarBusqueda();
+    } catch (error) {
+        tbody.innerHTML = filaVacia(8, "No se pudieron cargar las charlas.", "text-danger");
+        mostrarAlerta(error.message, "danger");
+    }
+}
+
+function editarCharla(id) {
+    const c = charlas.find(x => Number(x.id) === Number(id));
+    if (!c) return;
+    document.getElementById("registroId").value = c.id;
+    document.getElementById("evento").value = c.eventoId;
+    document.getElementById("ponente").value = c.ponenteId;
+    document.getElementById("titulo").value = c.titulo || "";
+    document.getElementById("sala").value = c.sala || "";
+    document.getElementById("hora").value = String(c.horaInicio || "").slice(0, 5);
+    document.getElementById("cupo").value = c.cupo;
+    document.getElementById("tituloFormulario").textContent = "Editar charla";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Actualizar charla';
+    document.getElementById("panelFormulario").scrollIntoView({ behavior: "smooth" });
+}
+
+function limpiarFormulario() {
+    document.getElementById("form").reset();
+    document.getElementById("registroId").value = "";
+    document.getElementById("tituloFormulario").textContent = "Registrar charla";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Guardar charla';
+}
+
+async function eliminarCharla(id) {
+    if (!confirm("¿Deseas eliminar esta charla? Si tiene inscripciones, SQL Server puede impedir la eliminación.")) return;
+    try {
+        await api("/charlas/" + encodeURIComponent(id), "DELETE", null, API_CHARLAS);
+        mostrarAlerta("Charla eliminada correctamente.", "success");
+        await cargarCharlas();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+}
+</script>
+</body>
+</html>

@@ -10,15 +10,13 @@ class ApiPonentes {
 public:
     explicit ApiPonentes(const std::string& connStr);
     void registrarRutas(crow::App<crow::CORSHandler>& app);
-
 private:
     crow::response listarPonentes();
     crow::response obtenerPonente(int id);
     crow::response crearPonente(const crow::request& req);
     crow::response actualizarPonente(const crow::request& req, int id);
-
+    crow::response eliminarPonente(int id);
     static nlohmann::json ponenteAJson(const Ponente& p);
     static crow::response respuestaJson(int status, const nlohmann::json& body);
-
     PonenteDatabase db_;
 };

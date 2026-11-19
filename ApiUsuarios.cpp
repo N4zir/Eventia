@@ -14,7 +14,7 @@ namespace {
         if (u.nombreUsuario.size() > 50)
             return "El nombre de usuario no puede superar 50 caracteres.";
         if (rol != "administrador" && rol != "organizador" && rol !="asistente")
-            return "El rol debe ser administrador, organizador, o asistente.";
+            return "El rol debe ser Administrador, Organizador, o Asistente.";
         if (esNuevo && clave.empty())
             return "La clave es obligatoria.";
         if (!clave.empty() && clave.size() < 6)
@@ -141,6 +141,9 @@ crow::response ApiUsuarios::crearUsuario(const crow::request& req) {
     catch (const json::exception&) {
         return respuestaJson(400, { {"error", "JSON invalido o tipos de datos incorrectos."} });
     }
+    catch (const DuplicadoException& e) {
+        return respuestaJson(409, { {"error", e.what()} });
+    }
     catch (const exception& e) {
         return respuestaJson(500, { {"error", e.what()} });
     }
@@ -182,6 +185,9 @@ crow::response ApiUsuarios::actualizarUsuario(const crow::request& req, int id) 
     }
     catch (const json::exception&) {
         return respuestaJson(400, { {"error", "JSON invalido o tipos de datos incorrectos."} });
+    }
+    catch (const DuplicadoException& e) {
+        return respuestaJson(409, { {"error", e.what()} });
     }
     catch (const exception& e) {
         return respuestaJson(500, { {"error", e.what()} });

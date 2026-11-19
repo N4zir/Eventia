@@ -1,0 +1,14 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "x64\\Debug\\EventoDatabase.obj",
+            "outputs": [
+                "x64\\Debug\\EventoDatabase.h.obj.dt.module.json",
+                "x64\\Debug\\EventoDatabase.h.obj.dt.d.json"
+            ],
+            "requires": []
+        }
+    ]
+}

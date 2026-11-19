@@ -2,125 +2,85 @@
 #include "Conexion.h"
 #include "SqlUtf8.h"
 #include <stdexcept>
-#include <utility>
-
 using namespace std;
 
 namespace {
+const string SQL_SELECT_PONENTES =
+    "SELECT Id, Nombre, ISNULL(Institucion, '') FROM Ponentes";
 
-    // Columnas: 1 = Id, 2 = Nombre, 3 = Institucion
-    const string SQL_SELECT_PONENTES =
-        "SELECT Id, Nombre, Institucion FROM Ponentes";
-
-    Ponente leerPonente(SQLHSTMT stmt) {
-        SQLINTEGER id = 0;
-        if (!SQL_SUCCEEDED(SQLGetData(
-            stmt, 1, SQL_C_SLONG, &id, sizeof(id), nullptr))) {
-            throw runtime_error("No se pudo leer el ID del ponente.");
-        }
-
-        Ponente p;
-        p.id = static_cast<int>(id);
-        p.nombre = leerTexto(stmt, 2);
-        p.institucion = leerTexto(stmt, 3);
-        return p;
-    }
-
-} // namespace
-
-PonenteDatabase::PonenteDatabase(string connectionString)
-    : connStr_(std::move(connectionString)) {
+Ponente leerPonente(SQLHSTMT stmt) {
+    SQLINTEGER id = 0;
+    SQLGetData(stmt, 1, SQL_C_SLONG, &id, 0, nullptr);
+    Ponente p;
+    p.id = static_cast<int>(id);
+    p.nombre = leerTexto(stmt, 2);
+    p.institucion = leerTexto(stmt, 3);
+    return p;
+}
 }
 
-// LISTAR
+PonenteDatabase::PonenteDatabase(string connectionString) : connStr_(connectionString) {}
+
 vector<Ponente> PonenteDatabase::listarPonentes() {
     Conexion con(connStr_);
     const string sql = SQL_SELECT_PONENTES + " ORDER BY Id";
-
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al listar ponentes.");
-
     vector<Ponente> lista;
-    while (true) {
-        SQLRETURN resultado = SQLFetch(con.stmt);
-        if (resultado == SQL_NO_DATA)
-            break;
-        if (!SQL_SUCCEEDED(resultado))
-            throw runtime_error("Error al recuperar la lista de ponentes.");
-        lista.push_back(leerPonente(con.stmt));
-    }
+    while (SQL_SUCCEEDED(SQLFetch(con.stmt))) lista.push_back(leerPonente(con.stmt));
     return lista;
 }
 
-// OBTENER POR ID
 optional<Ponente> PonenteDatabase::obtenerPonente(int id) {
     Conexion con(connStr_);
-    SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
+    SQLINTEGER idParam = id;
     bindEntero(con.stmt, 1, idParam);
-
     const string sql = SQL_SELECT_PONENTES + " WHERE Id = ?";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al consultar el ponente.");
-
-    SQLRETURN resultado = SQLFetch(con.stmt);
-    if (resultado == SQL_NO_DATA)
-        return nullopt;
-    if (!SQL_SUCCEEDED(resultado))
-        throw runtime_error("Error al recuperar el ponente.");
-
+    if (!SQL_SUCCEEDED(SQLFetch(con.stmt))) return nullopt;
     return leerPonente(con.stmt);
 }
 
-// CREAR
 int PonenteDatabase::crearPonente(const Ponente& p) {
     Conexion con(connStr_);
-
-    wstring nombre = aWide(p.nombre);
-    wstring institucion = aWide(p.institucion);
-    SQLLEN longitudNombre = 0;
-    SQLLEN longitudInstitucion = 0;
-
-    bindTexto(con.stmt, 1, nombre, longitudNombre, 200);
-    bindTexto(con.stmt, 2, institucion, longitudInstitucion, 160);
-
+    wstring nombre = aWide(p.nombre), institucion = aWide(p.institucion);
+    SQLLEN l1 = 0, l2 = 0;
+    bindTexto(con.stmt, 1, nombre, l1, 100);
+    bindTexto(con.stmt, 2, institucion, l2, 80);
     const string sql =
-        "INSERT INTO Ponentes (Nombre, Institucion) "
-        "OUTPUT INSERTED.Id VALUES (?, ?)";
-
+        "INSERT INTO Ponentes (Nombre, Institucion) OUTPUT INSERTED.Id VALUES (?, ?)";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al insertar el ponente.");
-
     SQLINTEGER id = 0;
-    if (!SQL_SUCCEEDED(SQLFetch(con.stmt)))
-        throw runtime_error("No se pudo recuperar el ID del ponente creado.");
-
-    if (!SQL_SUCCEEDED(SQLGetData(
-        con.stmt, 1, SQL_C_SLONG, &id, sizeof(id), nullptr))) {
-        throw runtime_error("No se pudo leer el ID del ponente creado.");
-    }
-
+    if (SQL_SUCCEEDED(SQLFetch(con.stmt))) SQLGetData(con.stmt, 1, SQL_C_SLONG, &id, 0, nullptr);
     return static_cast<int>(id);
 }
 
-// ACTUALIZAR
 bool PonenteDatabase::actualizarPonente(int id, const Ponente& p) {
     Conexion con(connStr_);
-
-    SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
-    wstring nombre = aWide(p.nombre);
-    wstring institucion = aWide(p.institucion);
-    SQLLEN longitudNombre = 0;
-    SQLLEN longitudInstitucion = 0;
-
-    bindTexto(con.stmt, 1, nombre, longitudNombre, 200);
-    bindTexto(con.stmt, 2, institucion, longitudInstitucion, 160);
+    wstring nombre = aWide(p.nombre), institucion = aWide(p.institucion);
+    SQLLEN l1 = 0, l2 = 0;
+    SQLINTEGER idParam = id;
+    bindTexto(con.stmt, 1, nombre, l1, 100);
+    bindTexto(con.stmt, 2, institucion, l2, 80);
     bindEntero(con.stmt, 3, idParam);
-
-    const string sql =
-        "UPDATE Ponentes SET Nombre = ?, Institucion = ? WHERE Id = ?";
-
+    const string sql = "UPDATE Ponentes SET Nombre = ?, Institucion = ? WHERE Id = ?";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al actualizar el ponente.");
+    return hayFilasAfectadas(con.stmt);
+}
 
+// No borrar ponentes que tengan charlas asociadas (FK en Eventia_DB).
+bool PonenteDatabase::eliminarPonente(int id) {
+    Conexion con(connStr_);
+    SQLINTEGER idDelete = id, idCharla = id;
+    bindEntero(con.stmt, 1, idDelete);
+    bindEntero(con.stmt, 2, idCharla);
+    const string sql =
+        "DELETE FROM Ponentes WHERE Id = ? "
+        "AND NOT EXISTS (SELECT 1 FROM Charlas WHERE PonenteId = ?)";
+    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
+        throw runtime_error("Error SQL al eliminar el ponente. Revise las relaciones de la base de datos.");
     return hayFilasAfectadas(con.stmt);
 }

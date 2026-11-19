@@ -3,7 +3,6 @@
 #include "SqlUtf8.h"
 #include <stdexcept>
 #include <utility>
-#include <iostream>
 
 using namespace std;
 
@@ -20,7 +19,7 @@ namespace {
         "SELECT u.Id, u.AsistenteId, a.Nombre, "
         "u.NombreUsuario, u.Rol, u.Activo "
         "FROM Usuarios AS u "
-        "INNER JOIN Asistentes AS c ON a.Id = u.AsistenteId";
+        "INNER JOIN Asistentes AS a ON a.Id = u.AsistenteId";
 
     Usuario leerUsuario(SQLHSTMT stmt) {
         SQLINTEGER id = 0;
@@ -53,6 +52,21 @@ namespace {
         return u;
     }
 
+    // Las UNIQUE de AsistenteId y NombreUsuario devuelven 2601/2627.
+    bool esDuplicadoUsuario(SQLHSTMT stmt) {
+        SQLWCHAR state[10] = { 0 };
+        SQLWCHAR message[512] = { 0 };
+        SQLINTEGER nativeError = 0;
+        SQLSMALLINT length = 0;
+
+        if (!SQL_SUCCEEDED(SQLGetDiagRecW(
+            SQL_HANDLE_STMT, stmt, 1, state, &nativeError,
+            message, sizeof(message) / sizeof(SQLWCHAR), &length))) {
+            return false;
+        }
+        return nativeError == 2601 || nativeError == 2627;
+    }
+
 } // namespace
 
 UsuarioDatabase::UsuarioDatabase(string connectionString)
@@ -81,28 +95,7 @@ optional<Usuario> UsuarioDatabase::validarLogin(
         "AND u.Activo = 1";
 
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
-    {
-        SQLWCHAR state[10];
-        SQLWCHAR message[512];
-        SQLINTEGER nativeError;
-        SQLSMALLINT length;
-
-        SQLGetDiagRecW(
-            SQL_HANDLE_STMT,
-            con.stmt,
-            1,
-            state,
-            &nativeError,
-            message,
-            sizeof(message) / sizeof(SQLWCHAR),
-            &length
-        );
-
-        std::wcerr << L"SQLSTATE: " << state << std::endl;
-        std::wcerr << L"MENSAJE: " << message << std::endl;
-
         throw runtime_error("Error al validar el inicio de sesion.");
-    }
 
 
     SQLRETURN resultado = SQLFetch(con.stmt);
@@ -153,6 +146,24 @@ optional<Usuario> UsuarioDatabase::obtenerUsuario(int id) {
     return leerUsuario(con.stmt);
 }
 
+// EXISTENCIA DE FORANEA
+bool UsuarioDatabase::existeAsistente(int asistenteId) {
+    Conexion con(connStr_);
+    SQLINTEGER idParam = static_cast<SQLINTEGER>(asistenteId);
+    bindEntero(con.stmt, 1, idParam);
+
+    const string sql = "SELECT 1 FROM Asistentes WHERE Id = ?";
+    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
+        throw runtime_error("Error al consultar la existencia del asistente.");
+
+    SQLRETURN resultado = SQLFetch(con.stmt);
+    if (resultado == SQL_NO_DATA)
+        return false;
+    if (!SQL_SUCCEEDED(resultado))
+        throw runtime_error("Error al leer la consulta de existencia.");
+    return true;
+}
+
 // CREAR
 int UsuarioDatabase::crearUsuario(const Usuario& u, const string& clave, const string& rol) {
     Conexion con(connStr_);
@@ -171,13 +182,16 @@ int UsuarioDatabase::crearUsuario(const Usuario& u, const string& clave, const s
     bindTexto(con.stmt, 4, rolW, longitudRol, 20);
 
     const string sql =
-        "INSERT INTO Usuarios (AsistenteId, NombreUsuario,Clave, Rol) "
+        "INSERT INTO Usuarios (AsistenteId, NombreUsuario, Clave, Rol) "
         "OUTPUT INSERTED.Id VALUES (?, ?, "
         "CONVERT(NVARCHAR(64), "
-        "HASHBYTES('SHA2_256', CAST(? AS NVARCHAR(100))),2))";
+        "HASHBYTES('SHA2_256', CAST(? AS NVARCHAR(100))), 2), ?)";
 
-    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
+    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql))) {
+        if (esDuplicadoUsuario(con.stmt))
+            throw DuplicadoException("Ya existe un usuario con ese nombre de usuario o asistente.");
         throw runtime_error("Error al insertar el usuario.");
+    }
 
     SQLINTEGER id = 0;
     if (!SQL_SUCCEEDED(SQLFetch(con.stmt)))
@@ -222,14 +236,17 @@ bool UsuarioDatabase::actualizarUsuario(
 
     const string sql =
         "UPDATE Usuarios "
-        "SET AsistenteId = ?, NombreUsuario = ?, Activo = ?, Rol = ?,"
+        "SET AsistenteId = ?, NombreUsuario = ?, Activo = ?, Rol = ?, "
         "Clave = CASE WHEN LEN(?) = 0 THEN Clave "
         "ELSE CONVERT(NVARCHAR(64), "
         "HASHBYTES('SHA2_256', CAST(? AS NVARCHAR(100))), 2) END "
         "WHERE Id = ?";
 
-    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
+    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql))) {
+        if (esDuplicadoUsuario(con.stmt))
+            throw DuplicadoException("Ya existe un usuario con ese nombre de usuario o asistente.");
         throw runtime_error("Error al actualizar el usuario.");
+    }
 
     return hayFilasAfectadas(con.stmt);
 }

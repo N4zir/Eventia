@@ -2,133 +2,88 @@
 #include "Conexion.h"
 #include "SqlUtf8.h"
 #include <stdexcept>
-#include <utility>
-
 using namespace std;
 
 namespace {
+const string SQL_SELECT_EVENTOS =
+    "SELECT Id, Nombre, FechaInicio, FechaFin FROM Eventos";
 
-    // Columnas: 1 = Id, 2 = Nombre, 3 = FechaInicio, 4 = FechaFin
-    const string SQL_SELECT_EVENTOS =
-        "SELECT Id, Nombre, FechaInicio, FechaFin FROM Eventos";
-
-    Evento leerEvento(SQLHSTMT stmt) {
-        SQLINTEGER id = 0;
-        if (!SQL_SUCCEEDED(SQLGetData(
-            stmt, 1, SQL_C_SLONG, &id, sizeof(id), nullptr))) {
-            throw runtime_error("No se pudo leer el ID del evento.");
-        }
-
-        Evento e;
-        e.id = static_cast<int>(id);
-        e.nombre = leerTexto(stmt, 2);
-        e.fechaInicio = leerTexto(stmt, 3);
-        e.fechaFin = leerTexto(stmt, 4);
-        return e;
-    }
-
-} // namespace
-
-EventoDatabase::EventoDatabase(string connectionString)
-    : connStr_(std::move(connectionString)) {
+Evento leerEvento(SQLHSTMT stmt) {
+    SQLINTEGER id = 0;
+    SQLGetData(stmt, 1, SQL_C_SLONG, &id, 0, nullptr);
+    Evento e;
+    e.id = static_cast<int>(id);
+    e.nombre = leerTexto(stmt, 2);
+    e.fechaInicio = leerTexto(stmt, 3);
+    e.fechaFin = leerTexto(stmt, 4);
+    return e;
+}
 }
 
-// LISTAR
+EventoDatabase::EventoDatabase(string connectionString) : connStr_(connectionString) {}
+
 vector<Evento> EventoDatabase::listarEventos() {
     Conexion con(connStr_);
     const string sql = SQL_SELECT_EVENTOS + " ORDER BY Id";
-
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al listar eventos.");
-
     vector<Evento> lista;
-    while (true) {
-        SQLRETURN resultado = SQLFetch(con.stmt);
-        if (resultado == SQL_NO_DATA)
-            break;
-        if (!SQL_SUCCEEDED(resultado))
-            throw runtime_error("Error al recuperar la lista de eventos.");
-        lista.push_back(leerEvento(con.stmt));
-    }
+    while (SQL_SUCCEEDED(SQLFetch(con.stmt))) lista.push_back(leerEvento(con.stmt));
     return lista;
 }
 
-// OBTENER POR ID
 optional<Evento> EventoDatabase::obtenerEvento(int id) {
     Conexion con(connStr_);
-    SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
+    SQLINTEGER idParam = id;
     bindEntero(con.stmt, 1, idParam);
-
     const string sql = SQL_SELECT_EVENTOS + " WHERE Id = ?";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al consultar el evento.");
-
-    SQLRETURN resultado = SQLFetch(con.stmt);
-    if (resultado == SQL_NO_DATA)
-        return nullopt;
-    if (!SQL_SUCCEEDED(resultado))
-        throw runtime_error("Error al recuperar el evento.");
-
+    if (!SQL_SUCCEEDED(SQLFetch(con.stmt))) return nullopt;
     return leerEvento(con.stmt);
 }
 
-// CREAR
 int EventoDatabase::crearEvento(const Evento& e) {
     Conexion con(connStr_);
-
-    wstring nombre = aWide(e.nombre);
-    wstring fechaInicio = aWide(e.fechaInicio);
-    wstring fechaFin = aWide(e.fechaFin);
-    SQLLEN longitudNombre = 0;
-    SQLLEN longitudInicio = 0;
-    SQLLEN longitudFin = 0;
-
-    bindTexto(con.stmt, 1, nombre, longitudNombre, 240);
-    bindFecha(con.stmt, 2, fechaInicio, longitudInicio);
-    bindFecha(con.stmt, 3, fechaFin, longitudFin);
-
+    wstring nombre = aWide(e.nombre), fechaInicio = aWide(e.fechaInicio), fechaFin = aWide(e.fechaFin);
+    SQLLEN l1 = 0, l2 = 0, l3 = 0;
+    bindTexto(con.stmt, 1, nombre, l1, 120);
+    bindFecha(con.stmt, 2, fechaInicio, l2);
+    bindFecha(con.stmt, 3, fechaFin, l3);
     const string sql =
-        "INSERT INTO Eventos (Nombre, FechaInicio, FechaFin) "
-        "OUTPUT INSERTED.Id VALUES (?, ?, ?)";
-
+        "INSERT INTO Eventos (Nombre, FechaInicio, FechaFin) OUTPUT INSERTED.Id VALUES (?, ?, ?)";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al insertar el evento.");
-
     SQLINTEGER id = 0;
-    if (!SQL_SUCCEEDED(SQLFetch(con.stmt)))
-        throw runtime_error("No se pudo recuperar el ID del evento creado.");
-
-    if (!SQL_SUCCEEDED(SQLGetData(
-        con.stmt, 1, SQL_C_SLONG, &id, sizeof(id), nullptr))) {
-        throw runtime_error("No se pudo leer el ID del evento creado.");
-    }
-
+    if (SQL_SUCCEEDED(SQLFetch(con.stmt))) SQLGetData(con.stmt, 1, SQL_C_SLONG, &id, 0, nullptr);
     return static_cast<int>(id);
 }
 
-// ACTUALIZAR
 bool EventoDatabase::actualizarEvento(int id, const Evento& e) {
     Conexion con(connStr_);
-
-    SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
-    wstring nombre = aWide(e.nombre);
-    wstring fechaInicio = aWide(e.fechaInicio);
-    wstring fechaFin = aWide(e.fechaFin);
-    SQLLEN longitudNombre = 0;
-    SQLLEN longitudInicio = 0;
-    SQLLEN longitudFin = 0;
-
-    bindTexto(con.stmt, 1, nombre, longitudNombre, 240);
-    bindFecha(con.stmt, 2, fechaInicio, longitudInicio);
-    bindFecha(con.stmt, 3, fechaFin, longitudFin);
+    wstring nombre = aWide(e.nombre), fechaInicio = aWide(e.fechaInicio), fechaFin = aWide(e.fechaFin);
+    SQLLEN l1 = 0, l2 = 0, l3 = 0;
+    SQLINTEGER idParam = id;
+    bindTexto(con.stmt, 1, nombre, l1, 120);
+    bindFecha(con.stmt, 2, fechaInicio, l2);
+    bindFecha(con.stmt, 3, fechaFin, l3);
     bindEntero(con.stmt, 4, idParam);
-
-    const string sql =
-        "UPDATE Eventos SET Nombre = ?, FechaInicio = ?, FechaFin = ? "
-        "WHERE Id = ?";
-
+    const string sql = "UPDATE Eventos SET Nombre = ?, FechaInicio = ?, FechaFin = ? WHERE Id = ?";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al actualizar el evento.");
+    return hayFilasAfectadas(con.stmt);
+}
 
+// No borrar eventos que tengan charlas asociadas (FK en Eventia_DB).
+bool EventoDatabase::eliminarEvento(int id) {
+    Conexion con(connStr_);
+    SQLINTEGER idDelete = id, idCharla = id;
+    bindEntero(con.stmt, 1, idDelete);
+    bindEntero(con.stmt, 2, idCharla);
+    const string sql =
+        "DELETE FROM Eventos WHERE Id = ? "
+        "AND NOT EXISTS (SELECT 1 FROM Charlas WHERE EventoId = ?)";
+    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
+        throw runtime_error("Error SQL al eliminar el evento. Revise las relaciones de la base de datos.");
     return hayFilasAfectadas(con.stmt);
 }

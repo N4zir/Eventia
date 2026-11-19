@@ -6,81 +6,167 @@
   <title>Inscripciones | Eventia</title>
   <meta name="theme-color" content="#15181b">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23E8601C'/%3E%3Cpath d='M10 9h12v3H13.5v2.5H21v3h-7.5V20H22v3H10z' fill='%230e1012'/%3E%3C/svg%3E">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/app.css">
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <a href="dashboard.html" class="brand" aria-label="Eventia, ir al resumen">
-        <span class="brand-mark" aria-hidden="true">E</span>Eventia
-      </a>
-      <nav class="nav" aria-label="Principal">
-        <a href="dashboard.html">Resumen</a>
-        <a href="eventos.html">Eventos</a>
-        <a href="charlas.html">Charlas</a>
-        <a href="ponentes.html">Ponentes</a>
-        <a href="asistentes.html">Asistentes</a>
-        <a href="inscripciones.html" aria-current="page">Inscripciones</a>
-        <a href="certificados.html">Certificados</a>
-        <a href="usuarios.html">Usuarios</a>
-      </nav>
-      <a class="logout" href="login.html">Cerrar sesión</a>
-    </aside>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-area">
+    <header class="topbar" id="topbar"></header>
     <main class="content">
-      <div class="page-head">
-        <div>
-          <h1>Inscripciones</h1>
-          <p>Un asistente se inscribe a una charla (una sola vez por charla).</p>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm" id="open-new">Nueva inscripción</button>
+      <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div><h1 class="page-title">Gestión de inscripciones</h1><p class="page-subtitle mb-0">Registro, consulta y administración de inscripciones.</p></div>
+        <button type="button" class="btn btn-eventia btn-sm px-3" id="btnNuevo"><i class="bi bi-plus-lg me-1"></i> Nueva inscripción</button>
       </div>
-
-      <section class="panel" aria-label="Listado de inscripciones">
-        <div class="toolbar">
-          <input class="input" id="search" type="search" placeholder="Buscar en inscripciones" aria-label="Buscar en inscripciones">
-          <span class="note">Mostrando <span id="count"></span></span>
+      <div id="alerta" aria-live="polite"></div>
+<div class="row g-3 mb-4">
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-ticket-perforated"></i></div><div>
+    <p class="kpi-label">Inscripciones</p><p class="kpi-value" id="totalInscripciones">—</p><span class="kpi-delta">Asistentes inscritos a charlas</span></div></div></div>
+  <div class="col-12 col-md-6 col-xl-4"><div class="kpi-card"><div class="kpi-icon"><i class="bi bi-check2-circle"></i></div><div>
+    <p class="kpi-label">Con asistencia</p><p class="kpi-value" id="totalAsistio">—</p><span class="kpi-delta">Marcadas como asistidas</span></div></div></div>
+</div>
+      <section class="panel-card mb-4" id="panelFormulario">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div><h2 class="panel-title" id="tituloFormulario">Registrar inscripción</h2><p class="panel-subtitle mb-0">Completa los datos solicitados.</p></div>
+          <span class="kpi-icon"><i class="bi bi-ticket-perforated"></i></span>
         </div>
-        <p class="status" id="status" role="status"></p>
-        <div class="table-wrap">
-          <table class="wide" data-table data-unique="AsistenteId,CharlaId">
-            <thead><tr><th scope="col" class="id" data-field="Id">Id</th><th scope="col" class="" data-field="AsistenteId">Asistente</th><th scope="col" class="" data-field="CharlaId">Charla</th><th scope="col" class="" data-field="Fecha">Fecha</th><th scope="col" class="" data-field="Asistio">Asistió</th><th scope="col" class="" data-field="certificado">Certificado</th></tr></thead>
-            <tbody>
-            <tr id="insc-1" data-id="1"><td class="id">1</td><td><a href="asistentes.html#asistente-1">Laura Martínez</a></td><td><a href="charlas.html#charla-1">El futuro de los eventos híbridos</a></td><td>12 ago 2026</td><td><span class="tag tag--open">Sí</span></td><td><a href="certificados.html#cert-1">CERT-2026-0001</a></td></tr>
-            <tr id="insc-2" data-id="2"><td class="id">2</td><td><a href="asistentes.html#asistente-1">Laura Martínez</a></td><td><a href="charlas.html#charla-2">Analítica en tiempo real</a></td><td>12 ago 2026</td><td><span class="tag tag--open">Sí</span></td><td><a href="certificados.html#cert-2">CERT-2026-0002</a></td></tr>
-            <tr id="insc-3" data-id="3"><td class="id">3</td><td><a href="asistentes.html#asistente-2">Diego Fernández</a></td><td><a href="charlas.html#charla-1">El futuro de los eventos híbridos</a></td><td>15 ago 2026</td><td><span class="tag tag--open">Sí</span></td><td><a href="certificados.html#cert-3">CERT-2026-0003</a></td></tr>
-            <tr id="insc-4" data-id="4"><td class="id">4</td><td><a href="asistentes.html#asistente-3">Valeria Choque</a></td><td><a href="charlas.html#charla-1">El futuro de los eventos híbridos</a></td><td>19 ago 2026</td><td><span class="tag tag--open">Sí</span></td><td><a href="certificados.html#cert-4">CERT-2026-0004</a></td></tr>
-            <tr id="insc-5" data-id="5"><td class="id">5</td><td><a href="asistentes.html#asistente-3">Valeria Choque</a></td><td><a href="charlas.html#charla-3">Pagos digitales para eventos</a></td><td>19 ago 2026</td><td><span class="tag tag--open">Sí</span></td><td><a href="certificados.html#cert-5">CERT-2026-0005</a></td></tr>
-            <tr id="insc-6" data-id="6"><td class="id">6</td><td><a href="asistentes.html#asistente-4">Sebastián Rojas</a></td><td><a href="charlas.html#charla-2">Analítica en tiempo real</a></td><td>25 ago 2026</td><td><span class="tag tag--open">Sí</span></td><td><a href="certificados.html#cert-6">CERT-2026-0006</a></td></tr>
-            <tr id="insc-7" data-id="7"><td class="id">7</td><td><a href="asistentes.html#asistente-5">Mariana Flores</a></td><td><a href="charlas.html#charla-4">Datos abiertos en la práctica</a></td><td>14 sep 2026</td><td><span class="tag tag--draft">No</span></td><td>—</td></tr>
-            <tr id="insc-8" data-id="8"><td class="id">8</td><td><a href="asistentes.html#asistente-6">Jorge Álvarez</a></td><td><a href="charlas.html#charla-4">Datos abiertos en la práctica</a></td><td>20 sep 2026</td><td><span class="tag tag--open">Sí</span></td><td><a href="certificados.html#cert-7">CERT-2026-0007</a></td></tr>
-            <tr id="insc-9" data-id="9"><td class="id">9</td><td><a href="asistentes.html#asistente-6">Jorge Álvarez</a></td><td><a href="charlas.html#charla-5">Pipelines con poco presupuesto</a></td><td>20 sep 2026</td><td><span class="tag tag--open">Sí</span></td><td>—</td></tr>
-            <tr id="insc-10" data-id="10"><td class="id">10</td><td><a href="asistentes.html#asistente-7">Paola Mamani</a></td><td><a href="charlas.html#charla-6">Cómo validar un producto</a></td><td>20 oct 2026</td><td><span class="tag tag--draft">No</span></td><td>—</td></tr>
-            <tr id="insc-11" data-id="11"><td class="id">11</td><td><a href="asistentes.html#asistente-8">Nicolás Gutiérrez</a></td><td><a href="charlas.html#charla-6">Cómo validar un producto</a></td><td>22 oct 2026</td><td><span class="tag tag--draft">No</span></td><td>—</td></tr>
-            <tr id="insc-12" data-id="12"><td class="id">12</td><td><a href="asistentes.html#asistente-8">Nicolás Gutiérrez</a></td><td><a href="charlas.html#charla-7">Diseño centrado en personas</a></td><td>2 nov 2026</td><td><span class="tag tag--draft">No</span></td><td>—</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="empty" id="empty" hidden>No hay resultados. Prueba con otra búsqueda.</p>
-      </section>
-
-      <dialog id="new-dialog" aria-labelledby="dlg-title">
-        <h2 id="dlg-title">Nueva inscripción</h2>
-        <form class="form" method="dialog">
-          <div class="field"><label for="f-AsistenteId">Asistente</label><select class="input" id="f-AsistenteId" name="AsistenteId" required><option value="" selected disabled>Elige una opción</option><option value="1">Laura Martínez</option><option value="2">Diego Fernández</option><option value="3">Valeria Choque</option><option value="4">Sebastián Rojas</option><option value="5">Mariana Flores</option><option value="6">Jorge Álvarez</option><option value="7">Paola Mamani</option><option value="8">Nicolás Gutiérrez</option></select></div>
-          <div class="field"><label for="f-CharlaId">Charla</label><select class="input" id="f-CharlaId" name="CharlaId" required><option value="" selected disabled>Elige una opción</option><option value="1">El futuro de los eventos híbridos</option><option value="2">Analítica en tiempo real</option><option value="3">Pagos digitales para eventos</option><option value="4">Datos abiertos en la práctica</option><option value="5">Pipelines con poco presupuesto</option><option value="6">Cómo validar un producto</option><option value="7">Diseño centrado en personas</option></select></div>
-          <div class="field"><label for="f-Fecha">Fecha de inscripción</label><input class="input" id="f-Fecha" name="Fecha" type="date" required></div>
-          <div class="field"><label class="check"><input type="checkbox" id="f-Asistio" name="Asistio" data-yes="Sí" data-no="No"> Ya asistió a la charla</label></div>
-          <div class="dialog-actions">
-            <button type="button" class="btn btn-ghost btn-sm" data-cancel>Cancelar</button>
-            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        <form id="form" class="row g-3">
+          <input type="hidden" id="registroId">
+          <div class="col-12 col-md-4"><label class="form-label" for="asistente">Asistente</label><select class="form-select" id="asistente" required></select></div>
+          <div class="col-12 col-md-5"><label class="form-label" for="charla">Charla</label><select class="form-select" id="charla" required></select></div>
+          <div class="col-6 col-md-3"><label class="form-label" for="fecha">Fecha de inscripción</label><input type="date" class="form-control" id="fecha" ></div>
+          <div class="col-12"><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="asistio"><label class="form-check-label" for="asistio">El asistente ya asistió a la charla</label></div></div>
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-eventia px-3" id="btnGuardar"><i class="bi bi-check-lg me-1"></i> Guardar inscripción</button>
+            <button type="button" class="btn btn-outline-secondary px-3" id="btnLimpiar">Limpiar</button>
           </div>
         </form>
-      </dialog>
+      </section>
+      <section class="panel-card">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <div><h2 class="panel-title">Listado de inscripciones</h2><p class="panel-subtitle mb-0">Registrados en la base de datos.</p></div>
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="btnActualizar"><i class="bi bi-arrow-clockwise me-1"></i> Actualizar</button>
+        </div>
+        <div class="table-responsive"><table class="table table-custom align-middle mb-0">
+          <thead><tr><th>ID</th><th>Asistente</th><th>Charla</th><th>Fecha</th><th>Asistencia</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla"><tr><td colspan="6" class="text-center text-muted py-4">Cargando...</td></tr></tbody></table></div>
+      </section>
     </main>
   </div>
-  <script src="assets/js/tables.js"></script>
+</div>
+<div class="sidebar-overlay" id="overlay"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/comun.js"></script>
+<script>
+let inscripciones = [], asistentes = [], charlas = [];
+const sesion = montarLayout("inscripciones", "Buscar inscripción...");
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("btnGuardar");
+    btn.disabled = true;
+    try {
+        const id = document.getElementById("registroId").value;
+        const datos = {
+            asistenteId: Number(document.getElementById("asistente").value),
+            charlaId: Number(document.getElementById("charla").value),
+            fecha: document.getElementById("fecha").value || hoyISO(),
+            asistio: document.getElementById("asistio").checked
+        };
+        if (!datos.asistenteId || !datos.charlaId) throw new Error("Selecciona un asistente y una charla.");
+        const otras = inscripciones.filter(i => String(i.id) !== String(id));
+        if (otras.some(i => Number(i.asistenteId) === datos.asistenteId && Number(i.charlaId) === datos.charlaId))
+            throw new Error("Este asistente ya está inscrito en esa charla.");
+        const charla = charlas.find(c => Number(c.id) === datos.charlaId);
+        if (charla && otras.filter(i => Number(i.charlaId) === datos.charlaId).length >= Number(charla.cupo))
+            throw new Error("La charla ya alcanzó su cupo.");
+        if (id) await api("/inscripciones/" + encodeURIComponent(id), "PUT", datos, API_INSCRIPCIONES);
+        else await api("/inscripciones", "POST", datos, API_INSCRIPCIONES);
+        mostrarAlerta(id ? "Inscripción actualizada correctamente." : "Inscripción registrada correctamente.", "success");
+        limpiarFormulario();
+        await cargarInscripciones();
+    } catch (error) {
+        mostrarAlerta(error.message, "danger");
+    } finally {
+        btn.disabled = false;
+    }
+});
+document.getElementById("btnLimpiar").addEventListener("click", limpiarFormulario);
+document.getElementById("btnActualizar").addEventListener("click", cargarInscripciones);
+document.getElementById("btnNuevo").addEventListener("click", () => { limpiarFormulario(); document.getElementById("asistente").focus(); });
+if (sesion) cargarInscripciones();
+
+async function cargarInscripciones() {
+    const tbody = document.getElementById("tabla");
+    tbody.innerHTML = filaVacia(6, "Cargando inscripciones...");
+    try {
+        [inscripciones, asistentes, charlas] = await Promise.all(["/inscripciones", "/asistentes", "/charlas"].map(cargarLista));
+        llenarSelect("asistente", asistentes, a => a.id, a => a.nombre, "Selecciona un asistente");
+        llenarSelect("charla", charlas, c => c.id, c => c.titulo, "Selecciona una charla");
+        if (!document.getElementById("fecha").value) document.getElementById("fecha").value = hoyISO();
+        document.getElementById("totalInscripciones").textContent = inscripciones.length;
+        document.getElementById("totalAsistio").textContent = inscripciones.filter(i => esVerdadero(i.asistio)).length;
+        const nombre = (lista, id, campo) => (lista.find(x => Number(x.id) === Number(id)) || {})[campo] ?? "—";
+        tbody.innerHTML = inscripciones.length ? inscripciones.map(i => `
+            <tr><td>${Number(i.id)}</td><td class="fw-medium">${esc(nombre(asistentes, i.asistenteId, "nombre"))}</td>
+            <td>${esc(nombre(charlas, i.charlaId, "titulo"))}</td><td>${esc(fechaLegible(i.fecha))}</td>
+            <td><span class="tag ${esVerdadero(i.asistio) ? "tag--accent" : "tag--muted"}">${esVerdadero(i.asistio) ? "Asistió" : "Pendiente"}</span></td>
+            <td class="text-nowrap">
+                <button class="btn btn-sm btn-outline-secondary me-1" onclick="alternarAsistencia(${Number(i.id)})"><i class="bi bi-check2-square"></i> Asistencia</button>
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="editarInscripcion(${Number(i.id)})"><i class="bi bi-pencil"></i> Editar</button>
+                <button class="btn btn-sm btn-outline-danger" onclick="eliminarInscripcion(${Number(i.id)})"><i class="bi bi-trash"></i> Eliminar</button></td></tr>`).join("")
+            : filaVacia(6, "No hay inscripciones registradas.");
+        aplicarBusqueda();
+    } catch (error) {
+        tbody.innerHTML = filaVacia(6, "No se pudieron cargar las inscripciones.", "text-danger");
+        mostrarAlerta(error.message, "danger");
+    }
+}
+
+async function alternarAsistencia(id) {
+    const i = inscripciones.find(x => Number(x.id) === Number(id));
+    if (!i) return;
+    try {
+        await api("/inscripciones/" + encodeURIComponent(id), "PUT",
+            { asistenteId: i.asistenteId, charlaId: i.charlaId, fecha: fechaISO(i.fecha), asistio: !esVerdadero(i.asistio) }, API_INSCRIPCIONES);
+        await cargarInscripciones();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+}
+
+function editarInscripcion(id) {
+    const i = inscripciones.find(x => Number(x.id) === Number(id));
+    if (!i) return;
+    document.getElementById("registroId").value = i.id;
+    document.getElementById("asistente").value = i.asistenteId;
+    document.getElementById("charla").value = i.charlaId;
+    document.getElementById("fecha").value = fechaISO(i.fecha);
+    document.getElementById("asistio").checked = esVerdadero(i.asistio);
+    document.getElementById("tituloFormulario").textContent = "Editar inscripción";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Actualizar inscripción';
+    document.getElementById("panelFormulario").scrollIntoView({ behavior: "smooth" });
+}
+
+function limpiarFormulario() {
+    document.getElementById("form").reset();
+    document.getElementById("registroId").value = "";
+    document.getElementById("fecha").value = hoyISO();
+    document.getElementById("tituloFormulario").textContent = "Registrar inscripción";
+    document.getElementById("btnGuardar").innerHTML = '<i class="bi bi-check-lg me-1"></i> Guardar inscripción';
+}
+
+async function eliminarInscripcion(id) {
+    if (!confirm("¿Deseas eliminar esta inscripción? Si tiene un certificado, SQL Server puede impedir la eliminación.")) return;
+    try {
+        await api("/inscripciones/" + encodeURIComponent(id), "DELETE", null, API_INSCRIPCIONES);
+        mostrarAlerta("Inscripción eliminada correctamente.", "success");
+        await cargarInscripciones();
+    } catch (error) { mostrarAlerta(error.message, "danger"); }
+}
+</script>
 </body>
 </html>

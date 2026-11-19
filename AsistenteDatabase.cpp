@@ -16,13 +16,8 @@ namespace {
         "SELECT Id, Nombre, Correo FROM Asistentes";
 
     Asistente leerAsistente(SQLHSTMT stmt) {
-        SQLINTEGER id = 0;
-
-        if (!SQL_SUCCEEDED(SQLGetData(
-            stmt, 1, SQL_C_SLONG, &id, sizeof(id), nullptr))) {
-            throw runtime_error("No se pudo leer el ID del asistente.");
-        }
-
+        SQLINTEGER id = 0; 
+        SQLGetData(stmt, 1, SQL_C_SLONG, &id, 0, nullptr);
         Asistente a;
         a.id = static_cast<int>(id);
         a.nombre = leerTexto(stmt, 2);
@@ -141,8 +136,8 @@ bool AsistenteDatabase::actualizarAsistente(int id, const Asistente& a) {
     SQLLEN longitudNombre = 0;
     SQLLEN longitudCorreo = 0;
 
-    bindTexto(con.stmt, 1, nombre, longitudNombre, 200);
-    bindTexto(con.stmt, 2, correo, longitudCorreo, 200);
+    bindTexto(con.stmt, 1, nombre, longitudNombre, 100);
+    bindTexto(con.stmt, 2, correo, longitudCorreo, 100);
     bindEntero(con.stmt, 3, idParam);
 
     const string sql =
@@ -154,5 +149,18 @@ bool AsistenteDatabase::actualizarAsistente(int id, const Asistente& a) {
         throw runtime_error("Error al actualizar el asistente.");
     }
 
+    return hayFilasAfectadas(con.stmt);
+}
+
+bool AsistenteDatabase::eliminarAsistente(int id) {
+    Conexion con(connStr_);
+    SQLINTEGER idDelete = id, idUsuario = id;
+    bindEntero(con.stmt, 1, idDelete);
+    bindEntero(con.stmt, 2, idUsuario);
+    const string sql =
+        "DELETE FROM Asistentes WHERE Id = ? "
+        "AND NOT EXISTS (SELECT 1 FROM Usuarios WHERE AsistenteId = ?) ";
+    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
+        throw runtime_error("Error SQL al eliminar el cliente. Revise las relaciones de la base de datos.");
     return hayFilasAfectadas(con.stmt);
 }

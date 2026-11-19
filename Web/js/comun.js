@@ -1,7 +1,8 @@
 // Configuración central de la API REST Crow.
 const API_BASE = "http://localhost:18080";
 const API_USUARIOS = API_BASE;
-const API_CLIENTES = API_BASE;
+const API_ASISTENTES = API_BASE, API_EVENTOS = API_BASE, API_PONENTES = API_BASE,
+      API_CHARLAS = API_BASE, API_INSCRIPCIONES = API_BASE, API_CERTIFICADOS = API_BASE;
 
 function obtenerSesion() {
     try {
@@ -33,6 +34,8 @@ function requerirSesion() {
         cerrarSesion();
         return null;
     }
+    const buscador = document.getElementById("buscador");
+    if (buscador) buscador.addEventListener("input", aplicarBusqueda);
     return sesion;
 }
 
@@ -69,7 +72,7 @@ function esc(valor) {
 }
 
 function inicialesUsuario(sesion) {
-    const nombre = (sesion.clienteNombre || sesion.nombreUsuario || "Usuario").trim();
+    const nombre = (sesion.asistenteNombre || sesion.clienteNombre || sesion.nombreUsuario || "Usuario").trim();
     const partes = nombre.split(/\s+/).filter(Boolean);
     return partes.length > 1
         ? (partes[0][0] + partes[1][0]).toUpperCase()
@@ -86,21 +89,21 @@ function mostrarAlerta(mensaje, tipo = "info") {
         </div>`;
 }
 
-// Monta el mismo armazón visual del dashboard adjunto.
-function montarLayout(paginaActiva, tituloBusqueda = "Buscar producto, venta o proveedor...") {
+// Monta sidebar y topbar de Eventia.
+function montarLayout(paginaActiva, tituloBusqueda = "Buscar en la tabla...") {
     const sesion = requerirSesion();
     if (!sesion) return null;
 
-    const nombre = sesion.clienteNombre || sesion.nombreUsuario || "Usuario";
+    const nombre = sesion.asistenteNombre || sesion.clienteNombre || sesion.nombreUsuario || "Usuario";
     const enlaces = [
         { id: "dashboard", texto: "Dashboard", href: "dashboard.html", icono: "bi-grid-1x2-fill", grupo: "Principal" },
-        { id: "clientes", texto: "Clientes", href: "clientes.html", icono: "bi-person-lines-fill", grupo: "Principal" },
-        { id: "inventario", texto: "Inventario", href: "#", icono: "bi-box-seam", grupo: "Principal", pendiente: true },
-        { id: "ventas", texto: "Ventas", href: "#", icono: "bi-cart3", grupo: "Principal", pendiente: true },
-        { id: "proveedores", texto: "Proveedores", href: "#", icono: "bi-truck", grupo: "Principal", pendiente: true },
-        { id: "usuarios", texto: "Usuarios", href: "usuarios.html", icono: "bi-people", grupo: "Administración" },
-        { id: "reportes", texto: "Reportes", href: "#", icono: "bi-file-earmark-bar-graph", grupo: "Administración", pendiente: true },
-        { id: "configuracion", texto: "Configuración", href: "#", icono: "bi-gear", grupo: "Administración", pendiente: true }
+        { id: "eventos", texto: "Eventos", href: "eventos.html", icono: "bi-calendar-event", grupo: "Programa" },
+        { id: "charlas", texto: "Charlas", href: "charlas.html", icono: "bi-mic", grupo: "Programa" },
+        { id: "ponentes", texto: "Ponentes", href: "ponentes.html", icono: "bi-person-video3", grupo: "Programa" },
+        { id: "asistentes", texto: "Asistentes", href: "asistentes.html", icono: "bi-people", grupo: "Participantes" },
+        { id: "inscripciones", texto: "Inscripciones", href: "inscripciones.html", icono: "bi-ticket-perforated", grupo: "Participantes" },
+        { id: "certificados", texto: "Certificados", href: "certificados.html", icono: "bi-patch-check", grupo: "Participantes" },
+        { id: "usuarios", texto: "Usuarios", href: "usuarios.html", icono: "bi-shield-lock", grupo: "Administración" }
     ];
 
     const sidebar = document.getElementById("sidebar");
@@ -113,15 +116,15 @@ function montarLayout(paginaActiva, tituloBusqueda = "Buscar producto, venta o p
                 encabezado = `<p class="nav-section">${esc(grupoActual)}</p>`;
             }
             const clase = `nav-link-custom ${enlace.id === paginaActiva ? "active" : ""}`;
+            const actual = enlace.id === paginaActiva ? ' aria-current="page"' : "";
             const href = enlace.pendiente ? "#" : enlace.href;
             const disabled = enlace.pendiente ? 'aria-disabled="true" title="Módulo pendiente de integración" onclick="event.preventDefault(); return false;"' : "";
-            return `${encabezado}<a href="${href}" class="${clase}" ${disabled}><i class="bi ${enlace.icono}"></i> ${esc(enlace.texto)}</a>`;
+            return `${encabezado}<a href="${href}" class="${clase}"${actual} ${disabled}><i class="bi ${enlace.icono}"></i> ${esc(enlace.texto)}</a>`;
         }).join("");
 
         sidebar.innerHTML = `
             <div class="sidebar-brand">
-                <div class="brand-logo-sm"><i class="bi bi-capsule-pill"></i></div>
-                <span class="brand-name">Farmacia</span>
+                <a href="dashboard.html" class="brand"><span class="brand-mark" aria-hidden="true">E</span>Eventia</a>
             </div>
             <nav class="sidebar-nav" aria-label="Menú principal">${nav}</nav>
             <div class="sidebar-footer">
@@ -139,7 +142,7 @@ function montarLayout(paginaActiva, tituloBusqueda = "Buscar producto, venta o p
             </button>
             <div class="search-box d-none d-md-flex">
                 <i class="bi bi-search"></i>
-                <input type="text" placeholder="${esc(tituloBusqueda)}" disabled>
+                <input type="search" id="buscador" placeholder="${esc(tituloBusqueda)}" aria-label="Buscar en la tabla">
             </div>
             <div class="topbar-actions ms-auto">
                 <div class="user-chip">
@@ -171,5 +174,41 @@ function montarLayout(paginaActiva, tituloBusqueda = "Buscar producto, venta o p
         });
     }
 
+    const buscador = document.getElementById("buscador");
+    if (buscador) buscador.addEventListener("input", aplicarBusqueda);
     return sesion;
 }
+
+// ---------- Utilidades compartidas ----------
+const norm = t => String(t ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+function aplicarBusqueda() {
+    const q = norm((document.getElementById("buscador") || {}).value || "").trim();
+    document.querySelectorAll(".table-custom tbody tr").forEach(tr => { tr.hidden = !!q && !norm(tr.textContent).includes(q); });
+}
+async function cargarLista(ruta) {
+    const r = await api(ruta);
+    if (!Array.isArray(r)) throw new Error(`La API no devolvió una lista válida en ${ruta}.`);
+    return r;
+}
+function llenarSelect(id, items, valor, texto, vacio) {
+    const el = document.getElementById(id), previo = el.value;
+    el.innerHTML = `<option value="">${esc(vacio)}</option>` + items.map(i => `<option value="${esc(valor(i))}">${esc(texto(i))}</option>`).join("");
+    el.value = previo;
+}
+const esVerdadero = v => v === true || v === 1 || v === "1" || v === "true";
+const fechaISO = v => String(v ?? "").slice(0, 10);
+function hoyISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+function fechaLegible(v) {
+    const [a, m, d] = fechaISO(v).split("-").map(Number);
+    return a ? new Date(a, m - 1, d).toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" }) : "—";
+}
+function estadoEvento(e) {
+    const h = hoyISO();
+    if (h < fechaISO(e.fechaInicio)) return { texto: "Próximo", clase: "tag--muted", orden: 1 };
+    if (h > fechaISO(e.fechaFin)) return { texto: "Finalizado", clase: "tag--dark", orden: 2 };
+    return { texto: "En curso", clase: "tag--accent", orden: 0 };
+}
+const filaVacia = (cols, msg, clase = "text-muted") => `<tr><td colspan="${cols}" class="text-center ${clase} py-4">${esc(msg)}</td></tr>`;
+const botonesFila = (editar, eliminar, id) => `<td class="text-nowrap">
+    <button class="btn btn-sm btn-outline-primary me-1" onclick="${editar}(${Number(id)})"><i class="bi bi-pencil"></i> Editar</button>
+    <button class="btn btn-sm btn-outline-danger" onclick="${eliminar}(${Number(id)})"><i class="bi bi-trash"></i> Eliminar</button></td>`;
