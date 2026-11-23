@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <sql.h>
 #include <sqlext.h>
+#include <stdexcept>
 #include <string>
 
 // ===================== Conversión de texto =====================
@@ -108,4 +109,12 @@ inline bool hayFilasAfectadas(SQLHSTMT stmt) {
     SQLLEN filas = 0;
     SQLRowCount(stmt, &filas);
     return filas > 0;
+}
+
+// Un DELETE que no borra filas devuelve SQL_NO_DATA (100); no es un error.
+inline bool ejecutarDelete(SQLHSTMT stmt, const std::string& sql, const std::string& mensajeError) {
+    SQLRETURN ret = ejecutar(stmt, sql);
+    if (!SQL_SUCCEEDED(ret) && ret != SQL_NO_DATA)
+        throw std::runtime_error(mensajeError);
+    return hayFilasAfectadas(stmt);
 }

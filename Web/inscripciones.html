@@ -111,10 +111,9 @@ async function cargarInscripciones() {
         if (!document.getElementById("fecha").value) document.getElementById("fecha").value = hoyISO();
         document.getElementById("totalInscripciones").textContent = inscripciones.length;
         document.getElementById("totalAsistio").textContent = inscripciones.filter(i => esVerdadero(i.asistio)).length;
-        const nombre = (lista, id, campo) => (lista.find(x => Number(x.id) === Number(id)) || {})[campo] ?? "—";
         tbody.innerHTML = inscripciones.length ? inscripciones.map(i => `
-            <tr><td>${Number(i.id)}</td><td class="fw-medium">${esc(nombre(asistentes, i.asistenteId, "nombre"))}</td>
-            <td>${esc(nombre(charlas, i.charlaId, "titulo"))}</td><td>${esc(fechaLegible(i.fecha))}</td>
+            <tr><td>${Number(i.id)}</td><td class="fw-medium">${esc(i.asistenteNombre || "—")}</td>
+            <td>${esc(i.charlaTitulo || "—")}</td><td>${esc(fechaLegible(i.fecha))}</td>
             <td><span class="tag ${esVerdadero(i.asistio) ? "tag--accent" : "tag--muted"}">${esVerdadero(i.asistio) ? "Asistió" : "Pendiente"}</span></td>
             <td class="text-nowrap">
                 <button class="btn btn-sm btn-outline-secondary me-1" onclick="alternarAsistencia(${Number(i.id)})"><i class="bi bi-check2-square"></i> Asistencia</button>

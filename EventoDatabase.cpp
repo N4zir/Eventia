@@ -83,7 +83,6 @@ bool EventoDatabase::eliminarEvento(int id) {
     const string sql =
         "DELETE FROM Eventos WHERE Id = ? "
         "AND NOT EXISTS (SELECT 1 FROM Charlas WHERE EventoId = ?)";
-    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
-        throw runtime_error("Error SQL al eliminar el evento. Revise las relaciones de la base de datos.");
-    return hayFilasAfectadas(con.stmt);
+    return ejecutarDelete(con.stmt, sql,
+        "Error SQL al eliminar el evento. Revise las relaciones de la base de datos.");
 }

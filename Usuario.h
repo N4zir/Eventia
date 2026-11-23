@@ -2,7 +2,7 @@
 #include <string>
 
 // Representa un registro de la tabla Usuarios.
-// Los datos del cliente se obtienen mediante JOIN con Clientes.
+// Los datos del asistente se obtienen mediante JOIN con Asistentes.
 // La clave nunca se devuelve en el modelo ni en las respuestas JSON.
 struct Usuario {
     int id = 0;

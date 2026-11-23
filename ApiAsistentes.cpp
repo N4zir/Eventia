@@ -130,7 +130,7 @@ crow::response ApiAsistentes::eliminarAsistente(int id) {
         if (!db_.obtenerAsistente(id))
             return respuestaJson(404, {{"error", "Asistente no encontrado."}});
         if (!db_.eliminarAsistente(id))
-            return respuestaJson(409, {{"error", "No se puede eliminar: el asistente tiene un usuario o evento asociados."}});
+            return respuestaJson(409, {{"error", "No se puede eliminar: el asistente tiene un usuario o inscripcion asociados."}});
         return respuestaJson(200, {{"mensaje", "Asistente eliminado correctamente."}, {"id", id}});
     } catch (const exception& e) { return respuestaJson(500, {{"error", e.what()}}); }
 }

@@ -80,7 +80,6 @@ bool PonenteDatabase::eliminarPonente(int id) {
     const string sql =
         "DELETE FROM Ponentes WHERE Id = ? "
         "AND NOT EXISTS (SELECT 1 FROM Charlas WHERE PonenteId = ?)";
-    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
-        throw runtime_error("Error SQL al eliminar el ponente. Revise las relaciones de la base de datos.");
-    return hayFilasAfectadas(con.stmt);
+    return ejecutarDelete(con.stmt, sql,
+        "Error SQL al eliminar el ponente. Revise las relaciones de la base de datos.");
 }

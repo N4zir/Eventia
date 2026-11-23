@@ -96,13 +96,13 @@ function montarLayout(paginaActiva, tituloBusqueda = "Buscar en la tabla...") {
 
     const nombre = sesion.asistenteNombre || sesion.clienteNombre || sesion.nombreUsuario || "Usuario";
     const enlaces = [
-        { id: "dashboard", texto: "Dashboard", href: "dashboard.html", icono: "bi-grid-1x2-fill", grupo: "Principal" },
+        { id: "dashboard", texto: "Dashboard", href: "dashboard.html", icono: "bi-bar-chart-line-fill", grupo: "Principal" },
         { id: "eventos", texto: "Eventos", href: "eventos.html", icono: "bi-calendar-event", grupo: "Programa" },
         { id: "charlas", texto: "Charlas", href: "charlas.html", icono: "bi-mic", grupo: "Programa" },
-        { id: "ponentes", texto: "Ponentes", href: "ponentes.html", icono: "bi-person-video3", grupo: "Programa" },
+        { id: "ponentes", texto: "Ponentes", href: "ponentes.html", icono: "bi-person-workspace", grupo: "Programa" },
         { id: "asistentes", texto: "Asistentes", href: "asistentes.html", icono: "bi-people", grupo: "Participantes" },
         { id: "inscripciones", texto: "Inscripciones", href: "inscripciones.html", icono: "bi-ticket-perforated", grupo: "Participantes" },
-        { id: "certificados", texto: "Certificados", href: "certificados.html", icono: "bi-patch-check", grupo: "Participantes" },
+        { id: "certificados", texto: "Certificados", href: "certificados.html", icono: "bi-shield-check", grupo: "Participantes" },
         { id: "usuarios", texto: "Usuarios", href: "usuarios.html", icono: "bi-shield-lock", grupo: "Administración" }
     ];
 
@@ -124,7 +124,7 @@ function montarLayout(paginaActiva, tituloBusqueda = "Buscar en la tabla...") {
 
         sidebar.innerHTML = `
             <div class="sidebar-brand">
-                <a href="dashboard.html" class="brand"><span class="brand-mark" aria-hidden="true">E</span>Eventia</a>
+                <a href="dashboard.html" class="brand"><img src="img/logo.png" alt="Eventia" class="brand-logo"></a>
             </div>
             <nav class="sidebar-nav" aria-label="Menú principal">${nav}</nav>
             <div class="sidebar-footer">
@@ -145,12 +145,14 @@ function montarLayout(paginaActiva, tituloBusqueda = "Buscar en la tabla...") {
                 <input type="search" id="buscador" placeholder="${esc(tituloBusqueda)}" aria-label="Buscar en la tabla">
             </div>
             <div class="topbar-actions ms-auto">
+                <span class="bell" aria-hidden="true"><i class="bi bi-bell"></i></span>
                 <div class="user-chip">
                     <div class="avatar" id="avatarUsuario">${esc(inicialesUsuario(sesion))}</div>
                     <div class="d-none d-sm-block">
                         <p class="user-name mb-0" id="nombreUsuarioSesion">${esc(nombre)}</p>
                         <p class="user-role mb-0" id="detalleUsuarioSesion">@${esc(sesion.nombreUsuario || "usuario")}</p>
                     </div>
+                    <i class="bi bi-chevron-down d-none d-sm-inline chev"></i>
                 </div>
             </div>`;
     }

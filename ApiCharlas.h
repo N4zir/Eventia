@@ -16,6 +16,7 @@ private:
     crow::response obtenerCharla(int id);
     crow::response crearCharla(const crow::request& req);
     crow::response actualizarCharla(const crow::request& req, int id);
+    crow::response eliminarCharla(int id);
 
     static nlohmann::json charlaAJson(const Charla& c);
     static crow::response respuestaJson(int status, const nlohmann::json& body);

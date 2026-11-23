@@ -16,6 +16,7 @@ private:
     crow::response obtenerInscripcion(int id);
     crow::response crearInscripcion(const crow::request& req);
     crow::response actualizarInscripcion(const crow::request& req, int id);
+    crow::response eliminarInscripcion(int id);
 
     static nlohmann::json inscripcionAJson(const Inscripcion& i);
     static crow::response respuestaJson(int status, const nlohmann::json& body);

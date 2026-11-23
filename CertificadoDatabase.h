@@ -24,6 +24,7 @@ public:
 
     int crearCertificado(const Certificado& certificado);
     bool actualizarCertificado(int id, const Certificado& certificado);
+    bool eliminarCertificado(int id);
 
 private:
     std::string connStr_;

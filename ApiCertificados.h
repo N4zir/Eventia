@@ -16,6 +16,7 @@ private:
     crow::response obtenerCertificado(int id);
     crow::response crearCertificado(const crow::request& req);
     crow::response actualizarCertificado(const crow::request& req, int id);
+    crow::response eliminarCertificado(int id);
 
     static nlohmann::json certificadoAJson(const Certificado& c);
     static crow::response respuestaJson(int status, const nlohmann::json& body);

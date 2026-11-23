@@ -60,6 +60,9 @@ void ApiCharlas::registrarRutas(crow::App<crow::CORSHandler>& app) {
 
     CROW_ROUTE(app, "/charlas/<int>").methods("PUT"_method)
         ([this](const crow::request& req, int id) { return actualizarCharla(req, id); });
+
+    CROW_ROUTE(app, "/charlas/<int>").methods("DELETE"_method)
+        ([this](int id) { return eliminarCharla(id); });
 }
 
 // GET /charlas
@@ -180,12 +183,31 @@ crow::response ApiCharlas::actualizarCharla(const crow::request& req, int id) {
     }
 }
 
+// DELETE /charlas/{id}
+crow::response ApiCharlas::eliminarCharla(int id) {
+    try {
+        if (id <= 0)
+            return respuestaJson(400, { {"error", "El ID debe ser mayor que cero."} });
+        if (!db_.obtenerCharla(id))
+            return respuestaJson(404, { {"error", "Charla no encontrada."} });
+        if (!db_.eliminarCharla(id))
+            return respuestaJson(409, { {"error", "No se puede eliminar: la charla tiene inscripciones asociadas."} });
+        return respuestaJson(200, { {"mensaje", "Charla eliminada correctamente."}, {"id", id} });
+    }
+    catch (const exception& e) {
+        return respuestaJson(500, { {"error", e.what()} });
+    }
+}
+
 json ApiCharlas::charlaAJson(const Charla& c) {
     return {
         {"id", c.id},
         {"eventoId", c.eventoId},
+        {"eventoNombre", c.eventoNombre},
         {"sala", c.sala},
         {"ponenteId", c.ponenteId},
+        {"ponenteNombre", c.ponenteNombre},
+        {"ponenteInstitucion", c.ponenteInstitucion},
         {"titulo", c.titulo},
         {"horaInicio", c.horaInicio},
         {"cupo", c.cupo}

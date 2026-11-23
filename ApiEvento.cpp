@@ -3,9 +3,6 @@
 using namespace std;
 
 ApiEvento::ApiEvento(const string& connStr)
-/* : usuarios_(connStr), clientes_(connStr), vehiculos_(connStr),
- mecanicos_(connStr), servicios_(connStr), ordenes_(connStr),
- ordenServicios_(connStr), facturas_(connStr) {*/
     : usuarios_(connStr), asistentes_(connStr), eventos_(connStr),
       ponentes_(connStr), charlas_(connStr), inscripciones_(connStr),
       certificados_(connStr) {
@@ -33,11 +30,4 @@ void ApiEvento::registrarRutas() {
     charlas_.registrarRutas(app_);
     inscripciones_.registrarRutas(app_);
     certificados_.registrarRutas(app_);
-    //clientes_.registrarRutas(app_);
-    /* vehiculos_.registrarRutas(app_);
-     mecanicos_.registrarRutas(app_);
-     servicios_.registrarRutas(app_);
-     ordenes_.registrarRutas(app_);
-     ordenServicios_.registrarRutas(app_);
-     facturas_.registrarRutas(app_);*/
 }

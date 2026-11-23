@@ -9,13 +9,6 @@
 #include "ApiCharlas.h"
 #include "ApiInscripciones.h"
 #include "ApiCertificados.h"
-//#include "ApiClientes.h"
-//#include "ApiVehiculos.h"
-//#include "ApiMecanicos.h"
-//#include "ApiServicios.h"
-//#include "ApiOrdenes.h"
-//#include "ApiOrdenServicios.h"
-//#include "ApiFacturas.h"
 #include <string>
 
 // Servidor único del taller. Agrupa todas las APIs en un solo puerto.
@@ -38,11 +31,4 @@ private:
     ApiCharlas charlas_;
     ApiInscripciones inscripciones_;
     ApiCertificados certificados_;
-    //ApiClientes clientes_;
-    /* ApiVehiculos vehiculos_;
-     ApiMecanicos mecanicos_;
-     ApiServicios servicios_;
-     ApiOrdenes ordenes_;
-     ApiOrdenServicios ordenServicios_;
-     ApiFacturas facturas_;*/
 };

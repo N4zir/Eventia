@@ -109,10 +109,9 @@ async function cargarCharlas() {
         llenarSelect("ponente", ponentes, p => p.id, p => `${p.nombre} (${p.institucion})`, "Selecciona un ponente");
         document.getElementById("totalCharlas").textContent = charlas.length;
         document.getElementById("totalCupo").textContent = charlas.reduce((s, c) => s + Number(c.cupo || 0), 0);
-        const nombre = (lista, id, campo) => (lista.find(x => Number(x.id) === Number(id)) || {})[campo] ?? "—";
         tbody.innerHTML = charlas.length ? charlas.map(c => `
             <tr><td>${Number(c.id)}</td><td class="fw-medium">${esc(c.titulo)}</td>
-            <td>${esc(nombre(eventos, c.eventoId, "nombre"))}</td><td>${esc(nombre(ponentes, c.ponenteId, "nombre"))}</td>
+            <td>${esc(c.eventoNombre || "—")}</td><td>${esc(c.ponenteNombre || "—")}${c.ponenteInstitucion ? ` (${esc(c.ponenteInstitucion)})` : ""}</td>
             <td>${esc(c.sala)}</td><td>${esc(String(c.horaInicio || "").slice(0, 5))}</td>
             <td>${inscripciones.filter(i => Number(i.charlaId) === Number(c.id)).length} / ${Number(c.cupo)}</td>
             ${botonesFila("editarCharla", "eliminarCharla", c.id)}</tr>`).join("")

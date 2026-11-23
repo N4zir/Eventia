@@ -50,6 +50,9 @@ void ApiCertificados::registrarRutas(crow::App<crow::CORSHandler>& app) {
 
     CROW_ROUTE(app, "/certificados/<int>").methods("PUT"_method)
         ([this](const crow::request& req, int id) { return actualizarCertificado(req, id); });
+
+    CROW_ROUTE(app, "/certificados/<int>").methods("DELETE"_method)
+        ([this](int id) { return eliminarCertificado(id); });
 }
 
 // GET /certificados
@@ -166,10 +169,28 @@ crow::response ApiCertificados::actualizarCertificado(const crow::request& req, 
     }
 }
 
+// DELETE /certificados/{id}
+crow::response ApiCertificados::eliminarCertificado(int id) {
+    try {
+        if (id <= 0)
+            return respuestaJson(400, { {"error", "El ID debe ser mayor que cero."} });
+        if (!db_.obtenerCertificado(id))
+            return respuestaJson(404, { {"error", "Certificado no encontrado."} });
+        if (!db_.eliminarCertificado(id))
+            return respuestaJson(409, { {"error", "No se pudo eliminar el certificado."} });
+        return respuestaJson(200, { {"mensaje", "Certificado eliminado correctamente."}, {"id", id} });
+    }
+    catch (const exception& e) {
+        return respuestaJson(500, { {"error", e.what()} });
+    }
+}
+
 json ApiCertificados::certificadoAJson(const Certificado& c) {
     return {
         {"id", c.id},
         {"inscripcionId", c.inscripcionId},
+        {"asistenteNombre", c.asistenteNombre},
+        {"charlaTitulo", c.charlaTitulo},
         {"codigo", c.codigo},
         {"fechaEmision", c.fechaEmision}
     };

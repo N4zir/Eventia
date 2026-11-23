@@ -8,9 +8,13 @@ using namespace std;
 
 namespace {
 
-    // Columnas: 1 = Id, 2 = AsistenteId, 3 = CharlaId, 4 = Fecha, 5 = Asistio
+    // Columnas: 1 = Id, 2 = AsistenteId, 3 = Asistente.Nombre,
+    // 4 = CharlaId, 5 = Charla.Titulo, 6 = Fecha, 7 = Asistio
     const string SQL_SELECT_INSCRIPCIONES =
-        "SELECT Id, AsistenteId, CharlaId, Fecha, Asistio FROM Inscripciones";
+        "SELECT i.Id, i.AsistenteId, a.Nombre, i.CharlaId, ch.Titulo, i.Fecha, i.Asistio "
+        "FROM Inscripciones AS i "
+        "INNER JOIN Asistentes AS a ON a.Id = i.AsistenteId "
+        "INNER JOIN Charlas AS ch ON ch.Id = i.CharlaId";
 
     Inscripcion leerInscripcion(SQLHSTMT stmt) {
         SQLINTEGER id = 0;
@@ -26,40 +30,27 @@ namespace {
             stmt, 2, SQL_C_SLONG, &asistenteId, sizeof(asistenteId), nullptr))) {
             throw runtime_error("No se pudo leer el ID del asistente.");
         }
+        string asistenteNombre = leerTexto(stmt, 3);
         if (!SQL_SUCCEEDED(SQLGetData(
-            stmt, 3, SQL_C_SLONG, &charlaId, sizeof(charlaId), nullptr))) {
+            stmt, 4, SQL_C_SLONG, &charlaId, sizeof(charlaId), nullptr))) {
             throw runtime_error("No se pudo leer el ID de la charla.");
+        }
+        string charlaTitulo = leerTexto(stmt, 5);
+        string fecha = leerTexto(stmt, 6);
+        if (!SQL_SUCCEEDED(SQLGetData(
+            stmt, 7, SQL_C_BIT, &asistio, sizeof(asistio), nullptr))) {
+            throw runtime_error("No se pudo leer el estado de asistencia.");
         }
 
         Inscripcion i;
         i.id = static_cast<int>(id);
         i.asistenteId = static_cast<int>(asistenteId);
+        i.asistenteNombre = asistenteNombre;
         i.charlaId = static_cast<int>(charlaId);
-        i.fecha = leerTexto(stmt, 4);
-
-        if (!SQL_SUCCEEDED(SQLGetData(
-            stmt, 5, SQL_C_BIT, &asistio, sizeof(asistio), nullptr))) {
-            throw runtime_error("No se pudo leer el estado de asistencia.");
-        }
+        i.charlaTitulo = charlaTitulo;
+        i.fecha = fecha;
         i.asistio = (asistio != 0);
         return i;
-    }
-
-    // Consulta puntual de existencia: no hace JOIN ni trae datos de otra tabla.
-    bool existePorId(const string& connStr, const string& sql, int id) {
-        Conexion con(connStr);
-        SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
-        bindEntero(con.stmt, 1, idParam);
-
-        if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
-            throw runtime_error("Error al consultar la existencia del registro.");
-
-        SQLRETURN resultado = SQLFetch(con.stmt);
-        if (resultado == SQL_NO_DATA)
-            return false;
-        if (!SQL_SUCCEEDED(resultado))
-            throw runtime_error("Error al leer la consulta de existencia.");
-        return true;
     }
 
     // La UNIQUE compuesta de AsistenteId + CharlaId devuelve 2601/2627.
@@ -93,7 +84,7 @@ InscripcionDatabase::InscripcionDatabase(string connectionString)
 // LISTAR
 vector<Inscripcion> InscripcionDatabase::listarInscripciones() {
     Conexion con(connStr_);
-    const string sql = SQL_SELECT_INSCRIPCIONES + " ORDER BY Id";
+    const string sql = SQL_SELECT_INSCRIPCIONES + " ORDER BY i.Id";
 
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al listar inscripciones.");
@@ -116,7 +107,7 @@ optional<Inscripcion> InscripcionDatabase::obtenerInscripcion(int id) {
     SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
     bindEntero(con.stmt, 1, idParam);
 
-    const string sql = SQL_SELECT_INSCRIPCIONES + " WHERE Id = ?";
+    const string sql = SQL_SELECT_INSCRIPCIONES + " WHERE i.Id = ?";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al consultar la inscripcion.");
 
@@ -203,4 +194,18 @@ bool InscripcionDatabase::actualizarInscripcion(int id, const Inscripcion& i) {
     }
 
     return hayFilasAfectadas(con.stmt);
+}
+
+// ELIMINAR
+// No borrar inscripciones que tengan certificados (FK en Eventia_DB).
+bool InscripcionDatabase::eliminarInscripcion(int id) {
+    Conexion con(connStr_);
+    SQLINTEGER idDelete = id, idCertificado = id;
+    bindEntero(con.stmt, 1, idDelete);
+    bindEntero(con.stmt, 2, idCertificado);
+    const string sql =
+        "DELETE FROM Inscripciones WHERE Id = ? "
+        "AND NOT EXISTS (SELECT 1 FROM Certificados WHERE InscripcionId = ?)";
+    return ejecutarDelete(con.stmt, sql,
+        "Error SQL al eliminar la inscripcion. Revise las relaciones de la base de datos.");
 }

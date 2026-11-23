@@ -48,6 +48,9 @@ void ApiInscripciones::registrarRutas(crow::App<crow::CORSHandler>& app) {
 
     CROW_ROUTE(app, "/inscripciones/<int>").methods("PUT"_method)
         ([this](const crow::request& req, int id) { return actualizarInscripcion(req, id); });
+
+    CROW_ROUTE(app, "/inscripciones/<int>").methods("DELETE"_method)
+        ([this](int id) { return eliminarInscripcion(id); });
 }
 
 // GET /inscripciones
@@ -170,11 +173,29 @@ crow::response ApiInscripciones::actualizarInscripcion(const crow::request& req,
     }
 }
 
+// DELETE /inscripciones/{id}
+crow::response ApiInscripciones::eliminarInscripcion(int id) {
+    try {
+        if (id <= 0)
+            return respuestaJson(400, { {"error", "El ID debe ser mayor que cero."} });
+        if (!db_.obtenerInscripcion(id))
+            return respuestaJson(404, { {"error", "Inscripcion no encontrada."} });
+        if (!db_.eliminarInscripcion(id))
+            return respuestaJson(409, { {"error", "No se puede eliminar: la inscripcion tiene un certificado asociado."} });
+        return respuestaJson(200, { {"mensaje", "Inscripcion eliminada correctamente."}, {"id", id} });
+    }
+    catch (const exception& e) {
+        return respuestaJson(500, { {"error", e.what()} });
+    }
+}
+
 json ApiInscripciones::inscripcionAJson(const Inscripcion& i) {
     return {
         {"id", i.id},
         {"asistenteId", i.asistenteId},
+        {"asistenteNombre", i.asistenteNombre},
         {"charlaId", i.charlaId},
+        {"charlaTitulo", i.charlaTitulo},
         {"fecha", i.fecha},
         {"asistio", i.asistio}
     };

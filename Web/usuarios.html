@@ -84,9 +84,8 @@ async function cargarUsuarios() {
         llenarSelect("uAsistente", asistentes, a => a.id, a => `${a.nombre} (${a.correo})`, "Selecciona un asistente");
         document.getElementById("totalUsuarios").textContent = usuarios.length;
         document.getElementById("totalActivos").textContent = usuarios.filter(u => esVerdadero(u.activo)).length;
-        const nombreAsistente = id => (asistentes.find(a => Number(a.id) === Number(id)) || {}).nombre || "—";
         tbody.innerHTML = usuarios.length ? usuarios.map(u => `
-            <tr><td>${Number(u.id)}</td><td class="fw-medium">${esc(u.nombreUsuario)}</td><td>${esc(nombreAsistente(u.asistenteId))}</td>
+            <tr><td>${Number(u.id)}</td><td class="fw-medium">${esc(u.nombreUsuario)}</td><td>${esc(u.asistenteNombre || "—")}</td>
             <td><span class="tag ${u.rol === "administrador" ? "tag--dark" : "tag--muted"}">${esc(ROLES[u.rol] || u.rol)}</span></td>
             <td><span class="tag ${esVerdadero(u.activo) ? "tag--accent" : "tag--muted"}">${esVerdadero(u.activo) ? "Activo" : "Inactivo"}</span></td>
             ${botonesFila("editarUsuario", "eliminarUsuario", u.id)}</tr>`).join("")

@@ -49,3 +49,20 @@ private:
         env = nullptr;
     }
 };
+
+// Consulta puntual de existencia: no hace JOIN ni trae datos de otra tabla.
+inline bool existePorId(const std::string& connStr, const std::string& sql, int id) {
+    Conexion con(connStr);
+    SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
+    bindEntero(con.stmt, 1, idParam);
+
+    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
+        throw std::runtime_error("Error al consultar la existencia del registro.");
+
+    SQLRETURN resultado = SQLFetch(con.stmt);
+    if (resultado == SQL_NO_DATA)
+        return false;
+    if (!SQL_SUCCEEDED(resultado))
+        throw std::runtime_error("Error al leer la consulta de existencia.");
+    return true;
+}

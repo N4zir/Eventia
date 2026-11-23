@@ -62,7 +62,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/comun.js"></script>
 <script>
-let certificados = [], inscripciones = [], asistentes = [], charlas = [];
+let certificados = [], inscripciones = [];
 const sesion = montarLayout("certificados", "Buscar certificado...");
 
 document.getElementById("form").addEventListener("submit", async (e) => {
@@ -96,8 +96,7 @@ document.getElementById("btnActualizar").addEventListener("click", cargarCertifi
 document.getElementById("btnNuevo").addEventListener("click", () => { limpiarFormulario(); document.getElementById("inscripcion").focus(); });
 if (sesion) cargarCertificados();
 
-const nombreDe = (lista, id, campo) => (lista.find(x => Number(x.id) === Number(id)) || {})[campo] ?? "—";
-const etiquetaInscripcion = i => `${nombreDe(asistentes, i.asistenteId, "nombre")} — ${nombreDe(charlas, i.charlaId, "titulo")}`;
+const etiquetaInscripcion = i => `${i.asistenteNombre || "—"} — ${i.charlaTitulo || "—"}`;
 
 function llenarInscripciones(actual) {
     const usadas = new Set(certificados.map(c => Number(c.inscripcionId)));
@@ -109,17 +108,16 @@ async function cargarCertificados() {
     const tbody = document.getElementById("tabla");
     tbody.innerHTML = filaVacia(6, "Cargando certificados...");
     try {
-        [certificados, inscripciones, asistentes, charlas] = await Promise.all(["/certificados", "/inscripciones", "/asistentes", "/charlas"].map(cargarLista));
+        [certificados, inscripciones] = await Promise.all(["/certificados", "/inscripciones"].map(cargarLista));
         llenarInscripciones(document.getElementById("registroId").value);
         if (!document.getElementById("emision").value) document.getElementById("emision").value = hoyISO();
         const usadas = new Set(certificados.map(c => Number(c.inscripcionId)));
         document.getElementById("totalCertificados").textContent = certificados.length;
         document.getElementById("totalPendientes").textContent = inscripciones.filter(i => esVerdadero(i.asistio) && !usadas.has(Number(i.id))).length;
-        tbody.innerHTML = certificados.length ? certificados.map(c => {
-            const ins = inscripciones.find(i => Number(i.id) === Number(c.inscripcionId)) || {};
-            return `<tr><td>${Number(c.id)}</td><td class="fw-medium">${esc(c.codigo)}</td>
-            <td>${esc(nombreDe(asistentes, ins.asistenteId, "nombre"))}</td><td>${esc(nombreDe(charlas, ins.charlaId, "titulo"))}</td>
-            <td>${esc(fechaLegible(c.fechaEmision))}</td>${botonesFila("editarCertificado", "eliminarCertificado", c.id)}</tr>`; }).join("")
+        tbody.innerHTML = certificados.length ? certificados.map(c => `
+            <tr><td>${Number(c.id)}</td><td class="fw-medium">${esc(c.codigo)}</td>
+            <td>${esc(c.asistenteNombre || "—")}</td><td>${esc(c.charlaTitulo || "—")}</td>
+            <td>${esc(fechaLegible(c.fechaEmision))}</td>${botonesFila("editarCertificado", "eliminarCertificado", c.id)}</tr>`).join("")
             : filaVacia(6, "No hay certificados emitidos.");
         aplicarBusqueda();
     } catch (error) {

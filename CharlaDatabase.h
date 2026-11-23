@@ -16,6 +16,7 @@ public:
 
     int crearCharla(const Charla& charla);
     bool actualizarCharla(int id, const Charla& charla);
+    bool eliminarCharla(int id);
 
 private:
     std::string connStr_;

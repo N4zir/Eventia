@@ -8,9 +8,15 @@ using namespace std;
 
 namespace {
 
-    // Columnas: 1 = Id, 2 = InscripcionId, 3 = Codigo, 4 = FechaEmision
+    // Columnas: 1 = Id, 2 = InscripcionId, 3 = Asistente.Nombre,
+    // 4 = Charla.Titulo, 5 = Codigo, 6 = FechaEmision
     const string SQL_SELECT_CERTIFICADOS =
-        "SELECT Id, InscripcionId, Codigo, FechaEmision FROM Certificados";
+        "SELECT ce.Id, ce.InscripcionId, a.Nombre, ch.Titulo, "
+        "ce.Codigo, ce.FechaEmision "
+        "FROM Certificados AS ce "
+        "INNER JOIN Inscripciones AS i ON i.Id = ce.InscripcionId "
+        "INNER JOIN Asistentes AS a ON a.Id = i.AsistenteId "
+        "INNER JOIN Charlas AS ch ON ch.Id = i.CharlaId";
 
     Certificado leerCertificado(SQLHSTMT stmt) {
         SQLINTEGER id = 0;
@@ -24,30 +30,17 @@ namespace {
             stmt, 2, SQL_C_SLONG, &inscripcionId, sizeof(inscripcionId), nullptr))) {
             throw runtime_error("No se pudo leer el ID de la inscripcion.");
         }
+        string asistenteNombre = leerTexto(stmt, 3);
+        string charlaTitulo = leerTexto(stmt, 4);
 
         Certificado c;
         c.id = static_cast<int>(id);
         c.inscripcionId = static_cast<int>(inscripcionId);
-        c.codigo = leerTexto(stmt, 3);
-        c.fechaEmision = leerTexto(stmt, 4);
+        c.asistenteNombre = asistenteNombre;
+        c.charlaTitulo = charlaTitulo;
+        c.codigo = leerTexto(stmt, 5);
+        c.fechaEmision = leerTexto(stmt, 6);
         return c;
-    }
-
-    // Consulta puntual de existencia: no hace JOIN ni trae datos de otra tabla.
-    bool existePorId(const string& connStr, const string& sql, int id) {
-        Conexion con(connStr);
-        SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
-        bindEntero(con.stmt, 1, idParam);
-
-        if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
-            throw runtime_error("Error al consultar la existencia del registro.");
-
-        SQLRETURN resultado = SQLFetch(con.stmt);
-        if (resultado == SQL_NO_DATA)
-            return false;
-        if (!SQL_SUCCEEDED(resultado))
-            throw runtime_error("Error al leer la consulta de existencia.");
-        return true;
     }
 
     // Las UNIQUE de InscripcionId y Codigo devuelven 2601/2627.
@@ -81,7 +74,7 @@ CertificadoDatabase::CertificadoDatabase(string connectionString)
 // LISTAR
 vector<Certificado> CertificadoDatabase::listarCertificados() {
     Conexion con(connStr_);
-    const string sql = SQL_SELECT_CERTIFICADOS + " ORDER BY Id";
+    const string sql = SQL_SELECT_CERTIFICADOS + " ORDER BY ce.Id";
 
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al listar certificados.");
@@ -104,7 +97,7 @@ optional<Certificado> CertificadoDatabase::obtenerCertificado(int id) {
     SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
     bindEntero(con.stmt, 1, idParam);
 
-    const string sql = SQL_SELECT_CERTIFICADOS + " WHERE Id = ?";
+    const string sql = SQL_SELECT_CERTIFICADOS + " WHERE ce.Id = ?";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al consultar el certificado.");
 
@@ -185,4 +178,14 @@ bool CertificadoDatabase::actualizarCertificado(int id, const Certificado& c) {
     }
 
     return hayFilasAfectadas(con.stmt);
+}
+
+// ELIMINAR
+bool CertificadoDatabase::eliminarCertificado(int id) {
+    Conexion con(connStr_);
+    SQLINTEGER idDelete = id;
+    bindEntero(con.stmt, 1, idDelete);
+    const string sql = "DELETE FROM Certificados WHERE Id = ?";
+    return ejecutarDelete(con.stmt, sql,
+        "Error SQL al eliminar el certificado. Revise las relaciones de la base de datos.");
 }

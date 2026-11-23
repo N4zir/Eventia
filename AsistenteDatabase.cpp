@@ -154,13 +154,14 @@ bool AsistenteDatabase::actualizarAsistente(int id, const Asistente& a) {
 
 bool AsistenteDatabase::eliminarAsistente(int id) {
     Conexion con(connStr_);
-    SQLINTEGER idDelete = id, idUsuario = id;
+    SQLINTEGER idDelete = id, idUsuario = id, idInscripcion = id;
     bindEntero(con.stmt, 1, idDelete);
     bindEntero(con.stmt, 2, idUsuario);
+    bindEntero(con.stmt, 3, idInscripcion);
     const string sql =
         "DELETE FROM Asistentes WHERE Id = ? "
-        "AND NOT EXISTS (SELECT 1 FROM Usuarios WHERE AsistenteId = ?) ";
-    if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
-        throw runtime_error("Error SQL al eliminar el cliente. Revise las relaciones de la base de datos.");
-    return hayFilasAfectadas(con.stmt);
+        "AND NOT EXISTS (SELECT 1 FROM Usuarios WHERE AsistenteId = ?) "
+        "AND NOT EXISTS (SELECT 1 FROM Inscripciones WHERE AsistenteId = ?)";
+    return ejecutarDelete(con.stmt, sql,
+        "Error SQL al eliminar el asistente. Revise las relaciones de la base de datos.");
 }

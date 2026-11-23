@@ -130,6 +130,9 @@ crow::response ApiUsuarios::crearUsuario(const crow::request& req) {
         if (!error.empty())
             return respuestaJson(400, { {"error", error} });
 
+        if (!db_.existeAsistente(u.asistenteId))
+            return respuestaJson(400, { {"error", "El asistente no existe."} });
+
         int id = db_.crearUsuario(u, clave, rol);
         auto nuevo = db_.obtenerUsuario(id);
 
@@ -173,6 +176,9 @@ crow::response ApiUsuarios::actualizarUsuario(const crow::request& req, int id) 
         string error = validarUsuario(u, clave, false, rol);
         if (!error.empty())
             return respuestaJson(400, { {"error", error} });
+
+        if (!db_.existeAsistente(u.asistenteId))
+            return respuestaJson(400, { {"error", "El asistente no existe."} });
 
         if (!db_.actualizarUsuario(id, u, clave, rol))
             return respuestaJson(404, { {"error", "No se pudo actualizar el usuario."} });

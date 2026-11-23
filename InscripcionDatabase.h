@@ -25,6 +25,7 @@ public:
 
     int crearInscripcion(const Inscripcion& inscripcion);
     bool actualizarInscripcion(int id, const Inscripcion& inscripcion);
+    bool eliminarInscripcion(int id);
 
 private:
     std::string connStr_;

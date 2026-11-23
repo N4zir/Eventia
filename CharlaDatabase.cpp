@@ -8,10 +8,15 @@ using namespace std;
 
 namespace {
 
-    // Columnas: 1 = Id, 2 = EventoId, 3 = Sala, 4 = PonenteId,
-    // 5 = Titulo, 6 = HoraInicio, 7 = Cupo
+    // Columnas: 1 = Id, 2 = EventoId, 3 = Evento.Nombre, 4 = Sala,
+    // 5 = PonenteId, 6 = Ponente.Nombre, 7 = Ponente.Institucion,
+    // 8 = Titulo, 9 = HoraInicio, 10 = Cupo
     const string SQL_SELECT_CHARLAS =
-        "SELECT Id, EventoId, Sala, PonenteId, Titulo, HoraInicio, Cupo FROM Charlas";
+        "SELECT c.Id, c.EventoId, e.Nombre, c.Sala, c.PonenteId, "
+        "p.Nombre, p.Institucion, c.Titulo, c.HoraInicio, c.Cupo "
+        "FROM Charlas AS c "
+        "INNER JOIN Eventos AS e ON e.Id = c.EventoId "
+        "INNER JOIN Ponentes AS p ON p.Id = c.PonenteId";
 
     Charla leerCharla(SQLHSTMT stmt) {
         SQLINTEGER id = 0;
@@ -27,43 +32,33 @@ namespace {
             stmt, 2, SQL_C_SLONG, &eventoId, sizeof(eventoId), nullptr))) {
             throw runtime_error("No se pudo leer el ID del evento.");
         }
+        string eventoNombre = leerTexto(stmt, 3);
+        string sala = leerTexto(stmt, 4);
+        if (!SQL_SUCCEEDED(SQLGetData(
+            stmt, 5, SQL_C_SLONG, &ponenteId, sizeof(ponenteId), nullptr))) {
+            throw runtime_error("No se pudo leer el ID del ponente.");
+        }
+        string ponenteNombre = leerTexto(stmt, 6);
+        string ponenteInstitucion = leerTexto(stmt, 7);
+        string titulo = leerTexto(stmt, 8);
+        string horaInicio = leerTexto(stmt, 9);
+        if (!SQL_SUCCEEDED(SQLGetData(
+            stmt, 10, SQL_C_SLONG, &cupo, sizeof(cupo), nullptr))) {
+            throw runtime_error("No se pudo leer el cupo de la charla.");
+        }
 
         Charla c;
         c.id = static_cast<int>(id);
         c.eventoId = static_cast<int>(eventoId);
-        c.sala = leerTexto(stmt, 3);
-
-        if (!SQL_SUCCEEDED(SQLGetData(
-            stmt, 4, SQL_C_SLONG, &ponenteId, sizeof(ponenteId), nullptr))) {
-            throw runtime_error("No se pudo leer el ID del ponente.");
-        }
+        c.eventoNombre = eventoNombre;
+        c.sala = sala;
         c.ponenteId = static_cast<int>(ponenteId);
-        c.titulo = leerTexto(stmt, 5);
-        c.horaInicio = leerTexto(stmt, 6);
-
-        if (!SQL_SUCCEEDED(SQLGetData(
-            stmt, 7, SQL_C_SLONG, &cupo, sizeof(cupo), nullptr))) {
-            throw runtime_error("No se pudo leer el cupo de la charla.");
-        }
+        c.ponenteNombre = ponenteNombre;
+        c.ponenteInstitucion = ponenteInstitucion;
+        c.titulo = titulo;
+        c.horaInicio = horaInicio;
         c.cupo = static_cast<int>(cupo);
         return c;
-    }
-
-    // Consulta puntual de existencia: no hace JOIN ni trae datos de otra tabla.
-    bool existePorId(const string& connStr, const string& sql, int id) {
-        Conexion con(connStr);
-        SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
-        bindEntero(con.stmt, 1, idParam);
-
-        if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
-            throw runtime_error("Error al consultar la existencia del registro.");
-
-        SQLRETURN resultado = SQLFetch(con.stmt);
-        if (resultado == SQL_NO_DATA)
-            return false;
-        if (!SQL_SUCCEEDED(resultado))
-            throw runtime_error("Error al leer la consulta de existencia.");
-        return true;
     }
 
 } // namespace
@@ -75,7 +70,7 @@ CharlaDatabase::CharlaDatabase(string connectionString)
 // LISTAR
 vector<Charla> CharlaDatabase::listarCharlas() {
     Conexion con(connStr_);
-    const string sql = SQL_SELECT_CHARLAS + " ORDER BY Id";
+    const string sql = SQL_SELECT_CHARLAS + " ORDER BY c.Id";
 
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al listar charlas.");
@@ -98,7 +93,7 @@ optional<Charla> CharlaDatabase::obtenerCharla(int id) {
     SQLINTEGER idParam = static_cast<SQLINTEGER>(id);
     bindEntero(con.stmt, 1, idParam);
 
-    const string sql = SQL_SELECT_CHARLAS + " WHERE Id = ?";
+    const string sql = SQL_SELECT_CHARLAS + " WHERE c.Id = ?";
     if (!SQL_SUCCEEDED(ejecutar(con.stmt, sql)))
         throw runtime_error("Error al consultar la charla.");
 
@@ -191,4 +186,18 @@ bool CharlaDatabase::actualizarCharla(int id, const Charla& c) {
         throw runtime_error("Error al actualizar la charla.");
 
     return hayFilasAfectadas(con.stmt);
+}
+
+// ELIMINAR
+// No borrar charlas que tengan inscripciones (FK en Eventia_DB).
+bool CharlaDatabase::eliminarCharla(int id) {
+    Conexion con(connStr_);
+    SQLINTEGER idDelete = id, idInscripcion = id;
+    bindEntero(con.stmt, 1, idDelete);
+    bindEntero(con.stmt, 2, idInscripcion);
+    const string sql =
+        "DELETE FROM Charlas WHERE Id = ? "
+        "AND NOT EXISTS (SELECT 1 FROM Inscripciones WHERE CharlaId = ?)";
+    return ejecutarDelete(con.stmt, sql,
+        "Error SQL al eliminar la charla. Revise las relaciones de la base de datos.");
 }
